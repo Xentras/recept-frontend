@@ -1,8 +1,28 @@
 import React from "react";
-import axios from "axios";
+//import axios from "axios";
+import Header from './components/Header';
+import Route from './components/Route';
+import Search from './components/Search';
+import Add from './components/Add';
 
 export default class App extends React.Component {
-  state = {
+  render() {
+    return (
+        <div>
+          <Header />
+          <Route path="/search">
+            <Search />
+          </Route>
+          <Route path="/add">
+            <Add/>
+          </Route>
+        </div>
+    );
+  }
+}
+
+/*
+state = {
     recipes: [],
   };
   componentDidMount() {
@@ -11,10 +31,7 @@ export default class App extends React.Component {
     });
   }
 
-  render() {
-    return (
-        <div>
-        {this.state.recipes.map(({name, tags, steps, ingredients, description}, i) => {
+{this.state.recipes.map(({name, tags, steps, ingredients, description}, i) => {
           return <div key={i} className="card">
             <div className="card-body">
               <h1>{name}</h1>
@@ -38,6 +55,5 @@ export default class App extends React.Component {
           </div>
         })}
       </div>
-    );
-  }
-}
+
+*/
