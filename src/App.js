@@ -1,22 +1,25 @@
 import React from "react";
-//import axios from "axios";
-import Header from './components/Header';
-import Route from './components/Route';
-import Search from './components/Search';
-import Add from './components/Add';
+import { BrowserRouter as Router, Switch, Route } from "react-router-dom";
+import Upload from "./pages/Upload";
+import Home from "./pages/Home";
+import Search from "./pages/Search";
+import Add from "./pages/Add";
+import MenuNavBar from "./components/MenuNavBar";
 
 export default class App extends React.Component {
   render() {
     return (
-        <div>
-          <Header />
-          <Route path="/search">
-            <Search />
-          </Route>
-          <Route path="/add">
-            <Add/>
-          </Route>
-        </div>
+      <div className="container">
+        <Router>
+          <MenuNavBar />
+          <Switch>
+            <Route component={Add} path="/add" />
+            <Route component={Search} path="/search" />
+            <Route component={Upload} path="/upload" />
+            <Route component={Home} path="/" />
+          </Switch>
+        </Router>
+      </div>
     );
   }
 }
