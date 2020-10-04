@@ -14,26 +14,16 @@ class MenuNavBar extends Component {
       <Menu>
         <Menu.Item header>Our Company</Menu.Item>
         <Menu.Item
-          as={NavLink} exact to="/"
-          name="Home"
-          active={activeItem === "Home"}
-          onClick={this.handleItemClick}
-        />
-        <Menu.Item
-          as={NavLink} exact to="/upload"
-          name="Upload"
-          active={activeItem === "Upload"}
-          onClick={this.handleItemClick}
-        />
-        <Menu.Item
           as={NavLink} exact to="/search"
           name="Search"
+          content="Sök"
           active={activeItem === "Search"}
           onClick={this.handleItemClick}
         />
         <Menu.Item
           as={NavLink} exact to="/add"
           name="Add"
+          content="Nytt recept"
           active={activeItem === "Add"}
           onClick={this.handleItemClick}
         />

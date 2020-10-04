@@ -29,7 +29,7 @@ const RecipeList = (props) => {
               {ingredients.map((ingredient, j) => {
                 return (
                   <li key={j}>
-                    ingredient-{j} = {ingredient.name}
+                    ingredient-{j} = {ingredient}
                   </li>
                 );
               })}
