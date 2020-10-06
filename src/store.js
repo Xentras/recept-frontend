@@ -9,10 +9,11 @@ import {
 
   const initialRecipeState = {
     name: '',
+    source: '',
     description: '',
-    ingredients: [],
-    steps: [],
-    tags: [],
+    ingredients: [{ ingredient: '' }],
+    steps: [{ step: '' }],
+    tags: [{ tag: '' }],
     file: '',
     previewFile: '',
   };

@@ -6,6 +6,8 @@ import Description from "../form/Description";
 import Ingredients from "../form/Ingredients";
 import Steps from "../form/Steps";
 import Tags from "../form/Tags";
+import Source from "../form/Source";
+import { BrowserView, MobileView } from "react-device-detect";
 
 class Add extends React.Component {
   constructor(props) {
@@ -29,6 +31,7 @@ class Add extends React.Component {
 
   uploadImage = async (base64EncodedImage, recipe) => {
     const name = recipe.name;
+    const source = recipe.source;
     const description = recipe.description;
     const ingredients = recipe.ingredients;
     const steps = recipe.steps;
@@ -44,6 +47,7 @@ class Add extends React.Component {
         const imageURL = response.data.url;
         const recipeSend = {
           name,
+          source,
           description,
           ingredients,
           steps,
@@ -66,7 +70,7 @@ class Add extends React.Component {
   };
 
   handleSubmit = (recipe) => {
-    console.log(recipe)
+    console.log(recipe);
     // const { file } = this.state;
 
     // if (!file) return;
@@ -83,19 +87,71 @@ class Add extends React.Component {
 
   render() {
     return (
-      <Form model="recipe" onSubmit={(recipe) => this.handleSubmit(recipe)}>
-        <Name />
-        <Description />
-        <Ingredients />
-        <Steps />
-        <Tags />
-        <div>
-          <input type="file" onChange={this.handleChange} />
-          <br />
-          <img alt="" src={this.state.previewFile} />
+      <Form
+        className="ui container"
+        model="recipe"
+        onSubmit={(recipe) => this.handleSubmit(recipe)}
+      >
+        <div className="ui form">
+          <BrowserView>
+            <div className="ui grid">
+              <div className="two column row">
+                <div className="column">
+                  <Name />
+                </div>
+                <div className="column">
+                  <Source />
+                </div>
+              </div>
+              <div className="on column row">
+                <div className="column">
+                  <Description />
+                </div>
+              </div>
+              <div className="three column row">
+                <div className="column">
+                  <Ingredients />
+                </div>
+                <div className="column">
+                  <Steps />
+                </div>
+                <div className="column">
+                  <Tags />
+                </div>
+              </div>
+              <div className="three column row">
+                <div className="column"></div>
+                <div className="column">
+                  <div>
+                    <input type="file" onChange={this.handleChange} />
+                  </div>
+                </div>
+                <div className="column"></div>
+              </div>
+              <div className="on column row">
+                <div className="column">
+                  <img alt="" src={this.state.previewFile} />
+                </div>
+              </div>
+            </div>
+          </BrowserView>
+          <MobileView>
+            <Name />
+            <Source />
+            <Description />
+            <Ingredients />
+            <Steps />
+            <Tags />
+            <div>
+              <input type="file" onChange={this.handleChange} />
+              <br />
+              <img alt="" src={this.state.previewFile} />
+            </div>
+          </MobileView>
         </div>
-
-        <button type="submit">Finish registration!</button>
+        <button className="ui primary button" type="submit">
+          Finish registration!
+        </button>
       </Form>
     );
   }

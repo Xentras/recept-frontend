@@ -7,17 +7,18 @@ class Tags extends React.Component {
     const { recipe, dispatch } = this.props;
     return (
       <div>
-        {/* <label htmlFor="recipe.tags">tags: </label>
-      <Control.text model="recipe.tags[0]" id="recipe.tags[0]" /> */}
+        <label htmlFor="recipe.tags">Tags: </label>
         {recipe.tags.map((tag, i) => (
-          <Field model={`recipe.tags[${i}]`} key={i}>
-            <input type="text" />
-            <button onClick={() => dispatch(actions.remove("recipe.tags", i))}>Remove</button>
+          <Field className="ui fluid action input" style={{paddingTop: 5, paddingBottom: 5}} model={`recipe.tags[${i}]`} key={i}>
+            <input type="text" defaultValue="" />
+            <button className="ui red icon button" onClick={() => dispatch(actions.remove("recipe.tags", i))}><i className="trash icon"></i></button>
           </Field>
         ))}
-        <button onClick={() => dispatch(actions.push("recipe.tags", ""))}>
+        <div>
+        <button className="positive ui button" style={{paddingTop: 10}} onClick={() => dispatch(actions.push("recipe.tags", ""))}>
           Add Tag
         </button>
+        </div>
       </div>
     );
   }

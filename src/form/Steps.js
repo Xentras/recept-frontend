@@ -7,17 +7,18 @@ class Steps extends React.Component {
     const { recipe, dispatch } = this.props;
     return (
       <div>
-        {/* <label htmlFor="recipe.steps">steps: </label>
-      <Control.text model="recipe.steps[0]" id="recipe.steps[0]" /> */}
+        <label htmlFor="recipe.steps">Steps: </label>
         {recipe.steps.map((step, i) => (
-          <Field model={`recipe.steps[${i}]`} key={i}>
-            <input type="text" />
-            <button onClick={() => dispatch(actions.remove("recipe.steps", i))}>Remove</button>
+          <Field className="ui fluid action input" style={{paddingTop: 5, paddingBottom: 5}} model={`recipe.steps[${i}]`} key={i}>
+            <input type="text" defaultValue="" />
+            <button className="ui red icon button" onClick={() => dispatch(actions.remove("recipe.steps", i))}><i className="trash icon"></i></button>
           </Field>
         ))}
-        <button onClick={() => dispatch(actions.push("recipe.steps", ""))}>
+        <div>
+        <button className="positive ui button" style={{paddingTop: 10}} onClick={() => dispatch(actions.push("recipe.steps", ""))}>
           Add Step
         </button>
+        </div>
       </div>
     );
   }

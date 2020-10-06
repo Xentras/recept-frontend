@@ -3,7 +3,7 @@ import { Control } from "react-redux-form";
 
 export default function Description() { 
     return (
-      <div>
+      <div className="field">
         <label htmlFor="recipe.description">Description: </label>
         <Control.textarea model="recipe.description" id="recipe.description" />
       </div>

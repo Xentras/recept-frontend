@@ -7,17 +7,18 @@ class Ingredients extends React.Component {
     const { recipe, dispatch } = this.props;
     return (
       <div>
-        {/* <label htmlFor="recipe.ingredients">Ingredients: </label>
-      <Control.text model="recipe.ingredients[0]" id="recipe.ingredients[0]" /> */}
+        <label htmlFor="recipe.ingredients">Ingredients: </label>
         {recipe.ingredients.map((ingredient, i) => (
-          <Field model={`recipe.ingredients[${i}]`} key={i}>
-            <input type="text" />
-            <button onClick={() => dispatch(actions.remove("recipe.ingredients", i))}>Remove</button>
+          <Field className="ui fluid action input" style={{paddingTop: 5, paddingBottom: 5}} model={`recipe.ingredients[${i}]`} key={i}>
+            <input type="text" defaultValue="" />
+            <button className="ui red icon button" onClick={() => dispatch(actions.remove("recipe.ingredients", i))}><i className="trash icon"></i></button>
           </Field>
         ))}
-        <button onClick={() => dispatch(actions.push("recipe.ingredients", ""))}>
+        <div>
+        <button className="positive ui button" style={{paddingTop: 10}} onClick={() => dispatch(actions.push("recipe.ingredients", ""))}>
           Add Ingredient
         </button>
+        </div>
       </div>
     );
   }
