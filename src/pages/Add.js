@@ -122,14 +122,23 @@ class Add extends React.Component {
               <div className="three column row">
                 <div className="column"></div>
                 <div className="column">
-                  <div>
-                    <input type="file" onChange={this.handleChange} />
+                  <div className="ui input">
+                    <label htmlFor="file" className="ui medium icon button">
+                      <i className="image icon"></i>
+                      Lägg till bild
+                    </label>
+                    <input
+                      type="file"
+                      id="file"
+                      onChange={this.handleChange}
+                      style={{ display: "none" }}
+                    />
                   </div>
                 </div>
                 <div className="column"></div>
               </div>
               <div className="on column row">
-                <div className="column">
+                <div className="column" style={{ textAlign: "center" }}>
                   <img alt="" src={this.state.previewFile} />
                 </div>
               </div>
