@@ -11,7 +11,7 @@ import {
     name: '',
     source: '',
     description: '',
-    ingredients: [{ ingredient: '' }],
+    ingredients: [{ name: '', amount: '', unit: '' }],
     steps: [{ step: '' }],
     tags: [{ tag: '' }],
     file: '',

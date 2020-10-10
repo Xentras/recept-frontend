@@ -12,7 +12,7 @@ class MenuNavBar extends Component {
 
     return (
       <Menu>
-        <Menu.Item header>Our Company</Menu.Item>
+        <Menu.Item header>Andreas recept</Menu.Item>
         <Menu.Item
           as={NavLink} exact to="/search"
           name="Search"

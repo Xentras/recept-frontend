@@ -71,18 +71,18 @@ class Add extends React.Component {
 
   handleSubmit = (recipe) => {
     console.log(recipe);
-    // const { file } = this.state;
+    const { file } = this.state;
 
-    // if (!file) return;
-    // const reader = new FileReader();
-    // reader.readAsDataURL(file);
-    // reader.onloadend = () => {
-    //   this.uploadImage(reader.result, recipe);
-    // };
-    // reader.onerror = () => {
-    //   console.error("Something went wrong!");
-    //   //setErrMsg("Something went wrong!");
-    // };
+    if (!file) return;
+    const reader = new FileReader();
+    reader.readAsDataURL(file);
+    reader.onloadend = () => {
+      this.uploadImage(reader.result, recipe);
+    };
+    reader.onerror = () => {
+      console.error("Something went wrong!");
+      //setErrMsg("Something went wrong!");
+    };
   };
 
   render() {
@@ -103,21 +103,24 @@ class Add extends React.Component {
                   <Source />
                 </div>
               </div>
-              <div className="on column row">
+              <div className="one column row">
                 <div className="column">
                   <Description />
                 </div>
               </div>
-              <div className="three column row">
+              <div className="one column row">
                 <div className="column">
                   <Ingredients />
                 </div>
+              </div>
+              <div className="three column row">
                 <div className="column">
                   <Steps />
                 </div>
                 <div className="column">
                   <Tags />
                 </div>
+                <div className="column" />
               </div>
               <div className="three column row">
                 <div className="column"></div>

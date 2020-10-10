@@ -1,47 +1,59 @@
 import React from "react";
 
-const RecipeList = (props) => {
-  const recipe = props.recipes.map(
-    ({ name, tags, steps, ingredients, description, imageURL}, i) => {
-      return (
-        <div key={i} className="card">
-          <div className="card-body">
-            <h1>{name}</h1>
-            <ul>
-              {tags.map((tag, j) => {
-                return (
-                  <li key={j}>
-                    Tag-{j} = {tag}
-                  </li>
-                );
-              })}
-            </ul>
-            <ul>
-              {steps.map((step, j) => {
-                return (
-                  <li key={j}>
-                    Step-{j} = {step}
-                  </li>
-                );
-              })}
-            </ul>
-            <ul>
-              {ingredients.map((ingredient, j) => {
-                return (
-                  <li key={j}>
-                    ingredient-{j} = {ingredient}
-                  </li>
-                );
-              })}
-            </ul>
-            <p>Description = {description}</p>
-            <img alt="" src={imageURL}></img>
+export default function RecipeList(props) {
+  return (
+    <div className="ui grid">
+      <div className="two column row">
+        <div className="column">
+          <h1>{props.recipes.name}</h1>
+          <div className="ui divider"></div>
+          <p>Ingredienser:</p>
+          <div className="ui bulleted list">
+            {props.recipes.ingredients.map((ingredient, j) => {
+              return (
+                <div className="item" key={j}>
+                  <p>{ingredient.name} {ingredient.amount} - {ingredient.unit}</p>
+                </div>
+              );
+            })}
+          </div>
+          <div className="ui divider"></div>
+          <p>Steg:</p>
+          <div className="ui ordered list">
+            {props.recipes.steps.map((step, j) => {
+              return (
+                <div className="item" key={j}>
+                  {step}
+                </div>
+              );
+            })}
+          </div>
+
+          <div className="ui divider"></div>
+        </div>
+        <div className="column">
+          <img
+            alt=""
+            src={props.recipes.imageURL}
+            className="ui medium rounded image"
+          />
+          <p>
+            Beskrivning: <br />
+            {props.recipes.description}
+          </p>
+          <div className="ui divider"></div>
+          <p>Kategori:</p>
+          <div className="ui tag labels">
+            {props.recipes.tags.map((tag, j) => {
+              return (
+                <div className="ui teal label" key={j}>
+                  {tag}
+                </div>
+              );
+            })}
           </div>
         </div>
-      );
-    }
+      </div>
+    </div>
   );
-  return <div>{recipe}</div>;
-};
-
-export default RecipeList;
+}

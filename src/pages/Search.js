@@ -1,6 +1,6 @@
 import React from "react";
 import SearchBar from "../components/SearchBar";
-import RecipeList from "../components/RecipeList";
+import RecipeImageList from "../components/RecipeImageList";
 import axios from "axios";
 
 class Search extends React.Component {
@@ -19,7 +19,7 @@ class Search extends React.Component {
     return (
       <div className="ui container" style={{ marginTop: "10px" }}>
         <SearchBar onSubmit={this.onSearchSubmit} />
-        <RecipeList recipes={this.state.recipes} />
+        <RecipeImageList recipes={this.state.recipes} />
       </div>
     );
   }
