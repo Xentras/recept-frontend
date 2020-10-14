@@ -50,7 +50,7 @@ class Tags extends React.Component {
     const { recipe } = this.props;
     return (
       <div>
-        <label htmlFor="recipe.tags">Tags: </label>
+        <label htmlFor="recipe.tags">Kategori: </label>
         {recipe.tags.map((tag, i) => (
           <Field
             className="ui fluid action input"
@@ -69,12 +69,13 @@ class Tags extends React.Component {
           </Field>
         ))}
         <div>
-          <button
-            className="positive ui button"
-            style={{ paddingTop: 10 }}
+        <button
+            className="positive ui labeled icon button"
+            style={{ marginTop: 10 }}
             onClick={() => this.onAddClick()}
           >
-            Add Tag
+            <i className="plus icon" />
+            Lägg till kategori
           </button>
         </div>
       </div>

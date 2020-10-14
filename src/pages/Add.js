@@ -1,6 +1,6 @@
 import React from "react";
 import axios from "axios";
-import { Form } from "react-redux-form";
+import { Form, actions } from "react-redux-form";
 import Name from "../form/Name";
 import Description from "../form/Description";
 import Ingredients from "../form/Ingredients";
@@ -8,6 +8,7 @@ import Steps from "../form/Steps";
 import Tags from "../form/Tags";
 import Source from "../form/Source";
 import { BrowserView, MobileView } from "react-device-detect";
+import { connect } from "react-redux";
 
 class Add extends React.Component {
   constructor(props) {
@@ -16,6 +17,8 @@ class Add extends React.Component {
     this.state = {
       file: null,
       previewFile: null,
+      visible: null,
+      success: null,
     };
 
     this.handleChange = this.handleChange.bind(this);
@@ -28,6 +31,10 @@ class Add extends React.Component {
       previewFile: URL.createObjectURL(event.target.files[0]),
     });
   }
+
+  onDismiss = () => {
+    this.setState({ visible: false });
+  };
 
   uploadImage = async (base64EncodedImage, recipe) => {
     const name = recipe.name;
@@ -57,8 +64,14 @@ class Add extends React.Component {
 
         axios
           .post("http://192.168.10.218:3005/recipe/", recipeSend)
-          .then(() => console.log("Recipe Created"))
+          .then((response2) => {
+            console.log("Recipe Created");
+            if (response2.status === 201) {
+              this.setState({ visible: true, success: true });
+            }
+          })
           .catch((err) => {
+            this.setState({ visible: true, success: false });
             console.error(err);
           });
       });
@@ -69,10 +82,14 @@ class Add extends React.Component {
     }
   };
 
+  componentWillUnmount() {
+    this.props.dispatch(actions.reset('recipe'));
+  }
+
   handleSubmit = (recipe) => {
     console.log(recipe);
     const { file } = this.state;
-
+    
     if (!file) return;
     const reader = new FileReader();
     reader.readAsDataURL(file);
@@ -86,6 +103,27 @@ class Add extends React.Component {
   };
 
   render() {
+    let message;
+    if (this.state.success === true) {
+      message = (
+        <div class="ui positive message">
+          <i class="close icon" onClick={this.onDismiss}></i>
+          <div class="header">You are eligible for a reward</div>
+          <p>
+            Go to your <b>special offers</b> page to see now.
+          </p>
+        </div>
+      );
+    } else {
+      message = (
+        <div class="ui negative message">
+          <i class="close icon" onClick={this.onDismiss}></i>
+          <div class="header">We're sorry we can't apply that discount</div>
+          <p>That offer has expired</p>
+        </div>
+      );
+    }
+
     return (
       <Form
         className="ui container"
@@ -126,7 +164,10 @@ class Add extends React.Component {
                 <div className="column"></div>
                 <div className="column">
                   <div className="ui input">
-                    <label htmlFor="file" className="ui medium icon button">
+                    <label
+                      htmlFor="file"
+                      className="positive ui labeled icon button"
+                    >
                       <i className="image icon"></i>
                       Lägg till bild
                     </label>
@@ -161,12 +202,15 @@ class Add extends React.Component {
             </div>
           </MobileView>
         </div>
-        <button className="ui primary button" type="submit">
-          Finish registration!
+        <button className="ui labeled icon primary button" type="submit">
+          <i className="save icon"></i>
+          Spara recept!
         </button>
+        {this.state.visible && message}
+        <div style={{ height: 150 }}></div>
       </Form>
     );
   }
 }
 
-export default Add;
+export default  connect((s) => s)(Add);

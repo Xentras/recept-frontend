@@ -50,7 +50,7 @@ class Steps extends React.Component {
     const { recipe } = this.props;
     return (
       <div>
-        <label htmlFor="recipe.steps">Steps: </label>
+        <label htmlFor="recipe.steps">Steg: </label>
         {recipe.steps.map((step, i) => (
           <Field
             className="ui fluid action input"
@@ -69,12 +69,13 @@ class Steps extends React.Component {
           </Field>
         ))}
         <div>
-          <button
-            className="positive ui button"
-            style={{ paddingTop: 10 }}
+        <button
+            className="positive ui labeled icon button"
+            style={{ marginTop: 10 }}
             onClick={() => this.onAddClick()}
           >
-            Add Step
+            <i className="plus icon" />
+            Lägg till steg
           </button>
         </div>
       </div>

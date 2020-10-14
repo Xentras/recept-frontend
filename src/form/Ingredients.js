@@ -59,15 +59,10 @@ class Ingredients extends React.Component {
             key={i}
           >
             <div className="two wide column">
-              {/* <label htmlFor="recipe.ingredients.amount">Mängd: </label> */}
               <Control.input model=".amount" placeholder="Mängd" />
             </div>
             <div className="two wide column">
-              {/* <label htmlFor="recipe.ingredients.unit">Enhet: </label> */}
-              <Control.select model=".unit">
-                <option value="" disabled selected>
-                  Enhet
-                </option>
+              <Control.select model=".unit" defaultValue="">
                 <option value="empty"></option>
                 <option value="kg">kg</option>
                 <option value="hg">hg</option>
@@ -82,10 +77,8 @@ class Ingredients extends React.Component {
               </Control.select>
             </div>
             <div className="four wide column">
-              {/* <label htmlFor="recipe.ingredients.name">Ingrediens: </label> */}
               <Control.input model=".name" placeholder="Ingrediens" />
             </div>
-            {/* <input type="text" defaultValue="" /> */}
             <div className="one wide column">
               <button
                 disabled={!this.state.enableButton}
@@ -99,11 +92,12 @@ class Ingredients extends React.Component {
         ))}
         <div>
           <button
-            className="positive ui button"
+            className="positive ui labeled icon button"
             style={{ marginTop: 10 }}
             onClick={() => this.onAddClick()}
           >
-            Add Ingredient
+            <i className="plus icon" />
+            Lägg till ingrediens
           </button>
         </div>
       </div>

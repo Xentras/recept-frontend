@@ -6,6 +6,7 @@ export default function RecipeList(props) {
       <div className="two column row">
         <div className="column">
           <h1>{props.recipes.name}</h1>
+          <p>Källa: {props.recipes.source}</p>
           <div className="ui divider"></div>
           <p>Ingredienser:</p>
           <div className="ui bulleted list">
