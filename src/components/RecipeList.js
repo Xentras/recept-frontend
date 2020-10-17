@@ -13,7 +13,7 @@ export default function RecipeList(props) {
             {props.recipes.ingredients.map((ingredient, j) => {
               return (
                 <div className="item" key={j}>
-                  <p>{ingredient.name} {ingredient.amount} - {ingredient.unit}</p>
+                  <p>{ingredient.amount}{ingredient.unit} - {ingredient.name}</p>
                 </div>
               );
             })}
