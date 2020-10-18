@@ -213,4 +213,4 @@ class Add extends React.Component {
   }
 }
 
-export default  connect((s) => s)(Add);
+export default connect((s) => s)(Add);
