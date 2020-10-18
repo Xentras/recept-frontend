@@ -28,9 +28,8 @@ export default function RecipeImageList(props) {
   
   const recipe = props.recipes.map(({ name, imageURL }, i) => {
     return (
-      <div key={i} >
+      <div key={i} className="four wide column" >
         <BrowserView>
-          <div className="three wide column">
             <div key={i} className="ui cards">
               <a className="card" onClick={() => imageClick(i)}>
                 <div className="image">
@@ -41,7 +40,6 @@ export default function RecipeImageList(props) {
                 </div>
               </a>
             </div>
-          </div>
         </BrowserView>
         <MobileView>
           <div key={i} className="ui cards">
@@ -83,13 +81,22 @@ export default function RecipeImageList(props) {
           >
             <i className="left chevron icon"></i>Tillbaka
           </button>
-          <button className="ui labeled icon button" onClick={() => openModal()}>
+          <button
+            className="ui labeled icon button"
+            onClick={() => openModal()}
+          >
             <i className="edit chevron icon"></i>Uppdater receptet
           </button>
         </div>
       )}
       {show && <RecipeList recipes={recipeShow} />}
-      {showModal && <EditModal recipes={recipeShow} modal={showModal} onChange={closeModal} />}
+      {showModal && (
+        <EditModal
+          recipes={recipeShow}
+          modal={showModal}
+          onChange={closeModal}
+        />
+      )}
     </div>
   );
 }
