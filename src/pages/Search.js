@@ -4,22 +4,22 @@ import RecipeImageList from "../components/RecipeImageList";
 import axios from "axios";
 
 class Search extends React.Component {
-  state = { recipes: [] };
+  state = { thumbnail: [] };
 
   onSearchSubmit = async (term) => {
     const response = await axios.get(
-      "http://192.168.10.218:3005/recipe/" + term,
+      "http://192.168.10.218:3005/recipe/thumbnail" + term,
       {}
     );
 
-    this.setState({ recipes: response.data });
+    this.setState({ thumbnail: response.data });
   };
 
   render() {
     return (
       <div className="ui container" style={{ marginTop: "10px" }}>
         <SearchBar onSubmit={this.onSearchSubmit} />
-        <RecipeImageList recipes={this.state.recipes} />
+        <RecipeImageList thumbnail={this.state.thumbnail} />
       </div>
     );
   }

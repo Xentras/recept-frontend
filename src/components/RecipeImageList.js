@@ -1,32 +1,21 @@
 import React, { useState } from "react";
 import { BrowserView, MobileView } from "react-device-detect";
 import RecipeList from "./RecipeList.js";
-import EditModal from "./EditModal.js";
 
 export default function RecipeImageList(props) {
   const [show, setshow] = useState(false);
-  const [showModal, setShowModal] = useState(false);
   const [recipeShow, setrecipeShow] = useState();
 
   const imageClick = (i) => {
     setshow(true);
-    setrecipeShow(props.recipes[i]);
+    setrecipeShow(props.thumbnail[i]);
   };
 
   const backClick = () => {
     setshow(false);
   };
-
-  const openModal = () => {
-    console.log(showModal)
-    setShowModal(true);
-  }
-
-  function closeModal() {
-    setShowModal(false);
-  }
   
-  const recipe = props.recipes.map(({ name, imageURL }, i) => {
+  const thumbnailList = props.thumbnail.map(({ name, imageURL }, i) => {
     return (
       <div key={i} className="four wide column" >
         <BrowserView>
@@ -67,36 +56,12 @@ export default function RecipeImageList(props) {
       <BrowserView>
         {!show && (
           <div className="ui grid container" style={{ paddingTop: 10 }}>
-            {recipe}
+            {thumbnailList}
           </div>
         )}
       </BrowserView>
-      <MobileView>{!show && recipe}</MobileView>
-      {show && (
-        <div>
-          <button
-            style={{ margin: 15 }}
-            className="ui labeled icon button"
-            onClick={() => backClick()}
-          >
-            <i className="left chevron icon"></i>Tillbaka
-          </button>
-          <button
-            className="ui labeled icon button"
-            onClick={() => openModal()}
-          >
-            <i className="edit chevron icon"></i>Uppdater receptet
-          </button>
-        </div>
-      )}
-      {show && <RecipeList recipes={recipeShow} />}
-      {showModal && (
-        <EditModal
-          recipes={recipeShow}
-          modal={showModal}
-          onChange={closeModal}
-        />
-      )}
+      <MobileView>{!show && thumbnailList}</MobileView>
+      {show && <RecipeList thumbnail={recipeShow} onChange={backClick} />}
     </div>
   );
 }

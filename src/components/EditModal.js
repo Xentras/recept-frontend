@@ -13,24 +13,14 @@ import Source from "../form/Source";
 function Editmodal(props) {
   const [open, setOpen] = useState(props.modal);
   const [recipeLoaded, setRecipeLoaded] = useState();
-  // const [stateLoaded, setStateLoaded] = useState(false);
   const [file, setFile] = useState();
   const [previewFile, setPreviewFile] = useState();
   const { dispatch } = props;
-  // const recipeToLoad = props.recipes;
 
   const closeModal = () => {
     setOpen(false);
     props.onChange(false);
   };
-
-  // const loaded = () => {
-  //   if (!recipeLoaded === undefined) {
-  //     setStateLoaded(true);
-  //   } else {
-  //     setStateLoaded(false);
-  //   }
-  // };
 
   const handleChange = (e) => {
     setFile(e.target.files[0]);
@@ -128,15 +118,13 @@ function Editmodal(props) {
       // console.log(recipeLoaded);
     };
     loadRecipe();
-    // loaded();
-  }, [recipeLoaded]);
+  }, [recipeLoaded, dispatch, props.recipe, props.recipes]);
 
   return (
     <Modal
       onClose={() => closeModal()}
       onOpen={() => setOpen(true)}
       open={open}
-      // onSubmit={e => handleSubmit(e)}
     >
       <Modal.Header>Uppdatera recept</Modal.Header>
       <Modal.Content>
