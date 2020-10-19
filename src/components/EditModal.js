@@ -20,6 +20,7 @@ function Editmodal(props) {
   const closeModal = () => {
     setOpen(false);
     props.onChange(false);
+    dispatch(actions.reset('recipe'))
   };
 
   const handleChange = (e) => {
