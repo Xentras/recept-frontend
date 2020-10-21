@@ -71,6 +71,7 @@ function Editmodal(props) {
             console.log("Recipe updated");
             if (response2.status === 201) {
               console.log(response2);
+              props.onUpdate(true);
               // this.setState({ visible: true, success: true });
             }
           })
@@ -104,6 +105,7 @@ function Editmodal(props) {
         .patch("http://192.168.10.218:3005/recipe/" + recipeId, recipeSend)
         .then((response) => {
           console.log(response);
+          props.onUpdate(true);
         });
         //setSuccessMsg("Image uploaded successfully");
     } catch (err) {
@@ -119,7 +121,7 @@ function Editmodal(props) {
       // console.log(recipeLoaded);
     };
     loadRecipe();
-  }, [recipeLoaded, dispatch, props.recipe, props.recipes]);
+  }, [recipeLoaded]);
 
   return (
     <Modal
@@ -133,7 +135,6 @@ function Editmodal(props) {
           <Form
             className="ui container"
             model="recipe"
-            onSubmit={(recipe) => handleSubmit(recipe)}
           >
             <div className="ui form">
               <div className="ui grid">
@@ -195,7 +196,7 @@ function Editmodal(props) {
                   </div>
                 </div>
               </div>
-              <button className="ui labeled icon primary button" type="submit" style={{ marginTop: 10}}>
+              <button className="ui labeled icon primary button" type="submit" style={{ marginTop: 10}} onClick={() => handleSubmit(props.recipe)}>
                 <i className="save icon"></i>
                 Uppdatera recept!
               </button>
