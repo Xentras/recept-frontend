@@ -6,11 +6,18 @@ export default function RecipeList(props) {
   const [recipe, setRecipe] = useState([]);
   const [showModal, setShowModal] = useState(false);
   const [stateLoaded, setStateLoaded] = useState(false);
+  const [updateRecipe, setUpdateRecipe] = useState();
   const recipeName = props.thumbnail.name;
 
   const openModal = () => {
     setShowModal(true);
   };
+
+  const handleUpdate = () => {
+    setUpdateRecipe(true);
+    setStateLoaded(false);
+    console.log("handleUpdate changed")
+  }
 
   function closeModal() {
     setShowModal(false);
@@ -25,12 +32,13 @@ export default function RecipeList(props) {
       await axios
         .get("http://192.168.10.218:3005/recipe/" + recipeName)
         .then((response) => {
+          console.log("reloaded")
           setRecipe(response.data[0]);
           setStateLoaded(true);
         });
-    };
+    }
     loadRecipe();
-  }, [recipeName]);
+  }, [updateRecipe])
 
   return (
     <div>
@@ -104,7 +112,7 @@ export default function RecipeList(props) {
           </div>
         )}
         {showModal && (
-          <EditModal recipes={recipe} modal={showModal} onChange={closeModal} />
+          <EditModal recipes={recipe} modal={showModal} onChange={closeModal} onUpdate={handleUpdate} />
         )}
       </div>
     </div>
