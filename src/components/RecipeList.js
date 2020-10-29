@@ -1,9 +1,11 @@
 import React, { useEffect, useState } from "react";
 import axios from "axios";
 import EditModal from "./EditModal.js";
+import _ from 'lodash';
 
 export default function RecipeList(props) {
   const [recipe, setRecipe] = useState([]);
+  const [ingredientList, setIngredientList] = useState([]);
   const [showModal, setShowModal] = useState(false);
   const [stateLoaded, setStateLoaded] = useState(false);
   const [updateRecipe, setUpdateRecipe] = useState();
@@ -16,7 +18,15 @@ export default function RecipeList(props) {
   const handleUpdate = () => {
     setUpdateRecipe(true);
     setStateLoaded(false);
-    console.log("handleUpdate changed")
+    // console.log("handleUpdate changed")
+  }
+
+  const checkValue = (subcategory) => {
+    if(subcategory === "undefined") {
+      return "Övrigt";
+    } else {
+      return subcategory;
+    }
   }
 
   function closeModal() {
@@ -24,6 +34,8 @@ export default function RecipeList(props) {
   }
 
   function backClick() {
+    // console.log(ingredientList)
+    // console.log(recipe)
     props.onChange(true);
   }
 
@@ -32,7 +44,15 @@ export default function RecipeList(props) {
       await axios
         .get("http://192.168.10.218:3005/recipe/" + recipeName)
         .then((response) => {
-          console.log("reloaded")
+          // console.log("reloaded")
+          setIngredientList(
+            _.chain(response.data[0].ingredients)
+              // Group the elements of Array based on `subcategory` property
+              .groupBy("subcategory")
+              // `key` is group's name (subcategory), `value` is the array of objects
+              .map((value, key) => ({ subcategory: key, ingredients: value }))
+              .value()
+          );
           setRecipe(response.data[0]);
           setStateLoaded(true);
         });
@@ -62,14 +82,18 @@ export default function RecipeList(props) {
               <p>Källa: {recipe.source}</p>
               <div className="ui divider"></div>
               <p>Ingredienser:</p>
-              <div className="ui bulleted list">
-                {recipe.ingredients.map((ingredient, j) => {
+              <div className="ui list">
+                {ingredientList.map((subcategory, j) => {
                   return (
                     <div className="item" key={j}>
-                      <p>
-                        {ingredient.amount}
-                        {ingredient.unit} - {ingredient.name}
-                      </p>
+                        <div className="header">{checkValue(subcategory.subcategory)}</div>
+                        <div className="ui bulleted list"> 
+                        {ingredientList[j].ingredients.map((ingredient, i) => {
+                          return (
+                            <div key={i} className="item">{ingredient.amount} {ingredient.unit} {ingredient.name}</div>
+                          )
+                        })}
+                        </div>
                     </div>
                   );
                 })}

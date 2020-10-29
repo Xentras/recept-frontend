@@ -59,7 +59,7 @@ class Ingredients extends React.Component {
             key={i}
           >
             <div className="two wide column">
-              <Control.input model=".amount" placeholder="Mängd" />
+              <Control.input model=".amount" placeholder="Mängd" defaultValue="" />
             </div>
             <div className="two wide column">
               <Control.select model=".unit" defaultValue="">
@@ -77,7 +77,10 @@ class Ingredients extends React.Component {
               </Control.select>
             </div>
             <div className="four wide column">
-              <Control.input model=".name" placeholder="Ingrediens" />
+              <Control.input model=".name" placeholder="Ingrediens" defaultValue="" />
+            </div>
+            <div className="four wide column">
+              <Control.input model=".subcategory" placeholder="Kategori" defaultValue="" />
             </div>
             <div className="one wide column">
               <button
