@@ -8,7 +8,7 @@ class Search extends React.Component {
 
   onSearchSubmit = async (term) => {
     const response = await axios.get(
-      "http://192.168.10.218:3005/recipe/thumbnail" + term,
+      "https://xentras-recipe-backend.herokuapp.com/recipe/thumbnail/" + term,
       {}
     );
 

@@ -46,6 +46,11 @@ class Tags extends React.Component {
     }
   }
 
+  // This will update the button state when updating a recipe
+  componentDidMount() {    
+    this.updateEnableButtonState();
+  }
+
   render() {
     const { recipe } = this.props;
     return (

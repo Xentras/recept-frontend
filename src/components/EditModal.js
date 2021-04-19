@@ -48,7 +48,7 @@ function Editmodal(props) {
     const recipeId = recipe._id; 
 
     try {
-      await axios("http://192.168.10.218:3005/recipe/upload", {
+      await axios("https://xentras-recipe-backend.herokuapp.com/recipe/upload", {
         method: "POST",
         data: JSON.stringify({ data: base64EncodedImage }),
         headers: { "Content-Type": "application/json" },
@@ -66,7 +66,7 @@ function Editmodal(props) {
         };
 
         axios
-          .patch("http://192.168.10.218:3005/recipe/" + recipeId, recipeSend)
+          .patch("https://xentras-recipe-backend.herokuapp.com/recipe/" + recipeId, recipeSend)
           .then((response2) => {
             console.log("Recipe updated");
             if (response2.status === 201) {
@@ -102,7 +102,7 @@ function Editmodal(props) {
     console.log(recipeSend);
     try {
       await axios
-        .patch("http://192.168.10.218:3005/recipe/" + recipeId, recipeSend)
+        .patch("https://xentras-recipe-backend.herokuapp.com/recipe/" + recipeId, recipeSend)
         .then((response) => {
           console.log(response);
           props.onUpdate(true);
