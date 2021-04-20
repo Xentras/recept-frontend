@@ -11,14 +11,14 @@ import {
     name: '',
     source: '',
     description: '',
-    ingredients: [{ name: '', amount: '', unit: '' }],
+    // ingredients: [{ name: '', amount: '', unit: '', subcategory: '' }],
+    ingredients: [{ size: '' , ingredient: [{ amount: '', unit: '', name: '', subcategory: '', }]}],
     steps: [{ step: '' }],
     tags: [{ tag: '' }],
     file: '',
     previewFile: '',
   };
 
-  // If you want your entire store to have the form state...
   const store = createStore(combineForms({
     recipe: initialRecipeState,
   }),applyMiddleware(thunk));

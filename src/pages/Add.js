@@ -45,7 +45,7 @@ class Add extends React.Component {
     const tags = recipe.tags;
 
     try {
-      await axios("http://192.168.10.218:3005/recipe/upload", {
+      await axios("https://xentras-recipe-backend.herokuapp.com/recipe/upload", {
         method: "POST",
         data: JSON.stringify({ data: base64EncodedImage }),
         headers: { "Content-Type": "application/json" },
@@ -63,7 +63,7 @@ class Add extends React.Component {
         };
 
         axios
-          .post("http://192.168.10.218:3005/recipe/", recipeSend)
+          .post("https://xentras-recipe-backend.herokuapp.com/recipe/", recipeSend)
           .then((response2) => {
             console.log("Recipe Created");
             if (response2.status === 201) {
