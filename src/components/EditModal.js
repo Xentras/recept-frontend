@@ -12,7 +12,7 @@ import Source from "../form/Source";
 
 function Editmodal(props) {
   const [open, setOpen] = useState(props.modal);
-  const [recipeLoaded, setRecipeLoaded] = useState();
+  const [recipeLoaded, setRecipeLoaded] = useState({});
   const [file, setFile] = useState();
   const [previewFile, setPreviewFile] = useState();
   const { dispatch } = props;

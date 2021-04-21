@@ -14,7 +14,7 @@ class MenuNavBar extends Component {
       <Menu>
         <Menu.Item header>Andreas recept</Menu.Item>
         <Menu.Item
-          as={NavLink} exact to="/search"
+          as={NavLink} exact to="/"
           name="Search"
           content="Sök"
           active={activeItem === "Search"}
