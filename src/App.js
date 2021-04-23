@@ -2,7 +2,7 @@ import React from "react";
 import { BrowserRouter as Router, Switch, Route } from "react-router-dom";
 import Search from "./pages/Search";
 import Add from "./pages/Add";
-import MenuNavBar from "./components/MenuNavBar";
+import MenuNavBar from "./components/MenuBar/MenuNavBar";
 import { Provider } from "react-redux";
 import store from "./store.js";
 

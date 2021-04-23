@@ -1,28 +1,22 @@
-import React from "react";
-import SearchBar from "../components/SearchBar";
-import RecipeImageList from "../components/RecipeImageList";
-import axios from "axios";
+import React, { useState } from "react";
+import SearchBar from "../components/SearchBar/SearchBar";
+import SearchResultList from "../components/SearchResult/SearchResultList";
+import { getThumbnail } from "../api/api";
 
-class Search extends React.Component {
-  state = { thumbnail: [] };
+function Search() {
+  const [thumbnail, setThumbnail] = useState([]);
 
-  onSearchSubmit = async (term) => {
-    const response = await axios.get(
-      "https://xentras-recipe-backend.herokuapp.com/recipe/thumbnail/" + term,
-      {}
-    );
-
-    this.setState({ thumbnail: response.data });
+  const searchText = async (text) => {
+    const response = await getThumbnail(text);
+    setThumbnail(response.data);
   };
 
-  render() {
-    return (
-      <div className="ui container" style={{ marginTop: "10px" }}>
-        <SearchBar onSubmit={this.onSearchSubmit} />
-        <RecipeImageList thumbnail={this.state.thumbnail} />
-      </div>
-    );
-  }
+  return (
+    <div className="ui container" style={{ marginTop: "10px" }}>
+      <SearchBar searchText={searchText} />
+      <SearchResultList thumbnail={thumbnail} />
+    </div>
+  );
 }
 
 export default Search;
