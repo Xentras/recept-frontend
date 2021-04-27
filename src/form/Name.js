@@ -1,7 +1,7 @@
 import React from "react";
 import { Control } from "react-redux-form";
 
-export default function Name() { 
+function Name() { 
     return (
       <div>
         <label htmlFor="recipe.name">Namn: </label>
@@ -9,3 +9,5 @@ export default function Name() {
       </div>
     );
 }
+
+export default Name;

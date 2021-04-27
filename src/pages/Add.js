@@ -1,7 +1,7 @@
-import React from "react";
-import axios from "axios";
-import { Form, actions } from "react-redux-form";
-import Name from "../form/Name";
+import React, { useState } from "react";
+import { useToasts } from 'react-toast-notifications';
+import { Form } from "react-redux-form";
+import Name from "../form/Name.js";
 import Description from "../form/Description";
 import Ingredients from "../form/Ingredients";
 import Steps from "../form/Steps";
@@ -9,126 +9,118 @@ import Tags from "../form/Tags";
 import Source from "../form/Source";
 import { BrowserView, MobileView } from "react-device-detect";
 import { connect } from "react-redux";
+import { postUploadImage, postRecipe } from "../api/api.js";
 
-class Add extends React.Component {
-  constructor(props) {
-    super(props);
+function Add(props) {
+    const [image, setImage] = useState();
+    const [previewImage, setPreviewImage] = useState();
+    const { addToast } = useToasts();
+    const recipe = props.recipe;
 
-    this.state = {
-      file: null,
-      previewFile: null,
-      visible: null,
-      success: null,
+    // This function will run if the user changes the image for the recipe
+    const handleImageChange = (e) => {
+        setImage(e.target.files[0]);
+        setPreviewImage(URL.createObjectURL(e.target.files[0]));
     };
 
-    this.handleChange = this.handleChange.bind(this);
-    this.uploadImage = this.uploadImage.bind(this);
-  }
+    // This function is used when the user updates the recipe 
+  const handleSubmit = (recipe) => {
+      const reader = new FileReader();
+      reader.readAsDataURL(image);
+      reader.onloadend = () => {
+        postNewRecipe(reader.result, recipe);
+      };
+      reader.onerror = () => {
+        addToast( 'Något gick fel vid inläsning av ny bild' , { appearance: 'error' });
+      };
+  };
 
-  handleChange(event) {
-    this.setState({
-      file: event.target.files[0],
-      previewFile: URL.createObjectURL(event.target.files[0]),
+  // This function is used when a user submits a update to a recipe and the image has also been updated
+  const postNewRecipe = async (base64EncodedImage, recipe) => {
+    const response = await postUploadImage(base64EncodedImage);
+    await postRecipe(recipe, response)
+      .then(() => {
+        addToast('Receptet har uppdaterats!', { appearance: 'success' });
+      })
+      .catch((error) => {
+        addToast( 'Det gick inte att uppdatera receptet, följande fel uppstod: ' + error.message, { appearance: 'error' });
     });
-  }
-
-  onDismiss = () => {
-    this.setState({ visible: false });
   };
 
-  uploadImage = async (base64EncodedImage, recipe) => {
-    const name = recipe.name;
-    const source = recipe.source;
-    const description = recipe.description;
-    const ingredients = recipe.ingredients;
-    const steps = recipe.steps;
-    const tags = recipe.tags;
+//   onDismiss = () => {
+//     this.setState({ visible: false });
+//   };
 
-    try {
-      await axios("https://xentras-recipe-backend.herokuapp.com/recipe/upload", {
-        method: "POST",
-        data: JSON.stringify({ data: base64EncodedImage }),
-        headers: { "Content-Type": "application/json" },
-      }).then((response) => {
-        console.log(response.data.url);
-        const imageURL = response.data.url;
-        const recipeSend = {
-          name,
-          source,
-          description,
-          ingredients,
-          steps,
-          tags,
-          imageURL,
-        };
+//   uploadImage = async (base64EncodedImage, recipe) => {
+//     const name = recipe.name;
+//     const source = recipe.source;
+//     const description = recipe.description;
+//     const ingredients = recipe.ingredients;
+//     const steps = recipe.steps;
+//     const tags = recipe.tags;
 
-        axios
-          .post("https://xentras-recipe-backend.herokuapp.com/recipe/", recipeSend)
-          .then((response2) => {
-            console.log("Recipe Created");
-            if (response2.status === 201) {
-              this.setState({ visible: true, success: true });
-            }
-          })
-          .catch((err) => {
-            this.setState({ visible: true, success: false });
-            console.error(err);
-          });
-      });
-      //setSuccessMsg("Image uploaded successfully");
-    } catch (err) {
-      console.error(err);
-      //setErrMsg("Something went wrong!");
-    }
-  };
+//     try {
+//       await axios("https://xentras-recipe-backend.herokuapp.com/recipe/upload", {
+//         method: "POST",
+//         data: JSON.stringify({ data: base64EncodedImage }),
+//         headers: { "Content-Type": "application/json" },
+//       }).then((response) => {
+//         console.log(response.data.url);
+//         const imageURL = response.data.url;
+//         const recipeSend = {
+//           name,
+//           source,
+//           description,
+//           ingredients,
+//           steps,
+//           tags,
+//           imageURL,
+//         };
 
-  componentWillUnmount() {
-    this.props.dispatch(actions.reset('recipe'));
-  }
+//         axios
+//           .post("https://xentras-recipe-backend.herokuapp.com/recipe/", recipeSend)
+//           .then((response2) => {
+//             console.log("Recipe Created");
+//             if (response2.status === 201) {
+//               this.setState({ visible: true, success: true });
+//             }
+//           })
+//           .catch((err) => {
+//             this.setState({ visible: true, success: false });
+//             console.error(err);
+//           });
+//       });
+//       //setSuccessMsg("Image uploaded successfully");
+//     } catch (err) {
+//       console.error(err);
+//       //setErrMsg("Something went wrong!");
+//     }
+//   };
 
-  handleSubmit = (recipe) => {
-    console.log(recipe);
-    const { file } = this.state;
+//   componentWillUnmount() {
+//     this.props.dispatch(actions.reset('recipe'));
+//   }
+
+//   handleSubmit = (recipe) => {
+//     console.log(recipe);
+//     const { file } = this.state;
     
-    if (!file) return;
-    const reader = new FileReader();
-    reader.readAsDataURL(file);
-    reader.onloadend = () => {
-      this.uploadImage(reader.result, recipe);
-    };
-    reader.onerror = () => {
-      console.error("Something went wrong!");
-      //setErrMsg("Something went wrong!");
-    };
-  };
-
-  render() {
-    let message;
-    if (this.state.success === true) {
-      message = (
-        <div class="ui positive message">
-          <i class="close icon" onClick={this.onDismiss}></i>
-          <div class="header">You are eligible for a reward</div>
-          <p>
-            Go to your <b>special offers</b> page to see now.
-          </p>
-        </div>
-      );
-    } else {
-      message = (
-        <div class="ui negative message">
-          <i class="close icon" onClick={this.onDismiss}></i>
-          <div class="header">We're sorry we can't apply that discount</div>
-          <p>That offer has expired</p>
-        </div>
-      );
-    }
+//     if (!file) return;
+//     const reader = new FileReader();
+//     reader.readAsDataURL(file);
+//     reader.onloadend = () => {
+//       this.uploadImage(reader.result, recipe);
+//     };
+//     reader.onerror = () => {
+//       console.error("Something went wrong!");
+//       //setErrMsg("Something went wrong!");
+//     };
+//   };
 
     return (
       <Form
         className="ui container"
         model="recipe"
-        onSubmit={(recipe) => this.handleSubmit(recipe)}
       >
         <div className="ui form">
           <BrowserView>
@@ -174,7 +166,7 @@ class Add extends React.Component {
                     <input
                       type="file"
                       id="file"
-                      onChange={this.handleChange}
+                      onChange={(e) => handleImageChange(e)}
                       style={{ display: "none" }}
                     />
                   </div>
@@ -183,7 +175,7 @@ class Add extends React.Component {
               </div>
               <div className="on column row">
                 <div className="column" style={{ textAlign: "center" }}>
-                  <img alt="" src={this.state.previewFile} />
+                  <img alt="" src={previewImage} />
                 </div>
               </div>
             </div>
@@ -196,21 +188,19 @@ class Add extends React.Component {
             <Steps />
             <Tags />
             <div>
-              <input type="file" onChange={this.handleChange} />
+              <input type="file" onChange={(e) => handleImageChange(e)} />
               <br />
-              <img alt="" src={this.state.previewFile} />
+              <img alt="" src={previewImage} />
             </div>
           </MobileView>
         </div>
-        <button className="ui labeled icon primary button" type="submit">
+        <button className="ui labeled icon primary button" type="submit" onClick={() => handleSubmit(recipe)}>
           <i className="save icon"></i>
           Spara recept!
         </button>
-        {this.state.visible && message}
         <div style={{ height: 150 }}></div>
       </Form>
     );
-  }
 }
 
 export default connect((s) => s)(Add);

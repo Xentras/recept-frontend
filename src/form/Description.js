@@ -1,7 +1,7 @@
 import React from "react";
 import { Control } from "react-redux-form";
 
-export default function Description() { 
+function Description() { 
     return (
       <div className="field">
         <label htmlFor="recipe.description">Beskrivning: </label>
@@ -9,3 +9,5 @@ export default function Description() {
       </div>
     );
 }
+
+export default Description;

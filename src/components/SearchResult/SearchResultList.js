@@ -1,20 +1,26 @@
 import React, { useState } from "react";
 import { BrowserView, MobileView } from "react-device-detect";
-import RecipeList from "../RecipeList.js";
+import Recipe from "../Recipe/Recipe.js";
 
 function SearchResultList(props) {
   const [showBackButton, setShowBackButton] = useState(false);
-  const [recipeShow, setrecipeShow] = useState();
+  const [recipeToShow, setRecipeToShow] = useState();
 
+  // This function is used when a user clicks on a recipe from the search results
+  // it will send the name of the recipe that was clicked to "recipe.js"
   const openRecipe = (i) => {
     setShowBackButton(true);
-    setrecipeShow(props.thumbnail[i]);
+    setRecipeToShow(props.thumbnail[i]);
   };
 
-  const onBackClick = () => {
+  // This function is used when a user clicks on the back button
+  // this will hide the back button when the user is in the search result area
+  const onBackButtonClick = () => {
     setShowBackButton(false);
   };
 
+  // This function is used to display all the recipes that are returned from the search
+  // it will create a list of clickable thumbnails
   const recipeThumbnailList = props.thumbnail.map(({ name, imageURL }, i) => {
     return (
       <div key={i} className="four wide column">
@@ -62,7 +68,7 @@ function SearchResultList(props) {
       </BrowserView>
       <MobileView>{!showBackButton && recipeThumbnailList}</MobileView>
       {showBackButton && (
-        <RecipeList thumbnail={recipeShow} onChange={onBackClick} />
+        <Recipe thumbnail={recipeToShow} onBackButtonClick={onBackButtonClick} />
       )}
     </div>
   );

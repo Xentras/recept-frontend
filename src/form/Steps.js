@@ -1,58 +1,42 @@
-import React from "react";
+import React, { useState, useEffect, useCallback } from "react";
 import { Field, actions } from "react-redux-form";
 import { connect } from "react-redux";
 
-class Steps extends React.Component {
-  constructor(props) {
-    super(props);
+function Steps(props) {
+    const [buttonsEnabled, setButtonsEnabled] = useState(false);
+    const { dispatch } = props;
+    const recipe = props.recipe;
 
-    this.state = {
-      enableButton: false,
+    const onRemoveClick = (i) => {
+        removeStep(i);
+        updateButtonState();
     };
-  }
 
-  async onRemoveClick(i) {
-    await this.removeStep(i);
-    this.updateEnableButtonState();
-  }
+    const onAddClick = () => {
+        addStep();
+        updateButtonState();
+    };
 
-  async onAddClick() {
-    await this.addStepField();
-    this.updateEnableButtonState();
-  }
-
-  removeStep(i) {
-    const { dispatch } = this.props;
-    dispatch(actions.remove("recipe.steps", i))
-    return
-  }
-
-  async addStepField() {
-    const { dispatch } = this.props;
-    dispatch(actions.push("recipe.steps", ""))
-    return
-  }
-
-  updateEnableButtonState() {
-    const { recipe } = this.props;
-    if(recipe.steps.length !== 1) {
-      this.setState({
-        enableButton: true
-      })
-    } else if (recipe.steps.length === 1) {
-      this.setState({
-        enableButton: false
-      })
-    }
-  }
-
-    // This will update the button state when updating a recipe
-    componentDidMount() {    
-      this.updateEnableButtonState();
+    const removeStep = (i) => {
+        dispatch(actions.remove("recipe.steps", i))
     }
 
-  render() {
-    const { recipe } = this.props;
+    const addStep = (i) => {
+        dispatch(actions.push("recipe.steps", ""))
+    }
+
+    const updateButtonState = useCallback(() => {
+        if (recipe.steps.length !== 1) {
+          setButtonsEnabled(true)
+        } else if (recipe.steps.length === 1) {
+          setButtonsEnabled(false)
+        }
+      }, [recipe.steps.length]);
+
+    useEffect(() => {
+        updateButtonState()
+    }, [updateButtonState])
+
     return (
       <div>
         <label htmlFor="recipe.steps">Steg: </label>
@@ -65,9 +49,9 @@ class Steps extends React.Component {
           >
             <input type="text" defaultValue="" />
             <button
-              disabled={!this.state.enableButton}
+              disabled={!buttonsEnabled}
               className="ui red icon button"
-              onClick={() => this.onRemoveClick(i)}
+              onClick={() => onRemoveClick(i)}
             >
               <i className="trash icon"></i>
             </button>
@@ -77,7 +61,7 @@ class Steps extends React.Component {
         <button
             className="positive ui labeled icon button"
             style={{ marginTop: 10 }}
-            onClick={() => this.onAddClick()}
+            onClick={() => onAddClick()}
           >
             <i className="plus icon" />
             Lägg till steg
@@ -85,7 +69,6 @@ class Steps extends React.Component {
         </div>
       </div>
     );
-  }
 }
 
 export default connect((s) => s)(Steps);
