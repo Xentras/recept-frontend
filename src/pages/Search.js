@@ -1,28 +1,26 @@
-import React from "react";
-import SearchBar from "../components/SearchBar";
-import RecipeImageList from "../components/RecipeImageList";
-import axios from "axios";
+import React, { useState } from "react";
+import SearchBar from "../components/SearchBar/SearchBar.js";
+import SearchResultList from "../components/SearchResult/SearchResultList.js";
+import LoadingSpinner from "../components/Common/LoadingSpinner/LoadingSpinner.js"
+import { getThumbnail } from "../api/api";
 
-class Search extends React.Component {
-  state = { thumbnail: [] };
+function Search() {
+  const [thumbnail, setThumbnail] = useState([]);
+  const [showLoadingSpinner, setShowLoadingSpinner] = useState(false);
 
-  onSearchSubmit = async (term) => {
-    const response = await axios.get(
-      "https://xentras-recipe-backend.herokuapp.com/recipe/thumbnail/" + term,
-      {}
-    );
-
-    this.setState({ thumbnail: response.data });
+  const searchRecipe = async (text) => {
+    setShowLoadingSpinner(true);
+    const response = await getThumbnail(text);
+    setShowLoadingSpinner(false);
+    setThumbnail(response.data);
   };
 
-  render() {
-    return (
-      <div className="ui container" style={{ marginTop: "10px" }}>
-        <SearchBar onSubmit={this.onSearchSubmit} />
-        <RecipeImageList thumbnail={this.state.thumbnail} />
-      </div>
-    );
-  }
+  return (
+    <div className="ui container" style={{ marginTop: "10px" }}>
+      <SearchBar searchRecipe={searchRecipe} />
+      {showLoadingSpinner ? <LoadingSpinner /> : <SearchResultList thumbnail={thumbnail} />}
+    </div>
+  );
 }
 
 export default Search;

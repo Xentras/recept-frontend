@@ -1,133 +1,93 @@
 import React, { useEffect, useState } from "react";
-import axios from "axios";
+import { useToasts } from 'react-toast-notifications';
 import { Form, actions } from "react-redux-form";
 import { Button, Modal } from "semantic-ui-react";
 import { connect } from "react-redux";
-import Name from "../form/Name";
-import Description from "../form/Description";
-import Ingredients from "../form/Ingredients";
-import Steps from "../form/Steps";
-import Tags from "../form/Tags";
-import Source from "../form/Source";
+import Name from "../../form/Name";
+import Description from "../../form/Description";
+import Ingredients from "../../form/Ingredients";
+import Steps from "../../form/Steps";
+import Tags from "../../form/Tags";
+import Source from "../../form/Source";
+import { postUploadImage, patchRecipeNoNewImage, patchRecipeNewImage } from "../../api/api.js";
 
-function Editmodal(props) {
-  const [open, setOpen] = useState(props.modal);
+function EditRecipeModal(props) {
   const [recipeLoaded, setRecipeLoaded] = useState({});
-  const [file, setFile] = useState();
-  const [previewFile, setPreviewFile] = useState();
+  const [image, setImage] = useState();
+  const [previewImage, setPreviewImage] = useState();
+  const { addToast } = useToasts();
   const { dispatch } = props;
+  const open = props.modal;
 
-  const closeModal = () => {
-    setOpen(false);
+  // This function will run when the user closes the modal
+  // it will tell "recipe.js" that it is closed and reset the recipe redux state
+  const closeEditRecipeModal = () => {
     props.onChange(false);
     dispatch(actions.reset('recipe'))
   };
 
-  const handleChange = (e) => {
-    setFile(e.target.files[0]);
-    setPreviewFile(URL.createObjectURL(e.target.files[0]));
+  // This function will run if the user changes the image for the recipe
+  const handleImageChange = (e) => {
+    setImage(e.target.files[0]);
+    setPreviewImage(URL.createObjectURL(e.target.files[0]));
   };
 
+  // This function is used when the user updates the recipe 
   const handleSubmit = (recipe) => {
-    if (!file) {
+    // Check if the user changed the image for the recipe or not
+    if (!image) {
       updateRecipeNoNewImage(recipe);
     } else {
       const reader = new FileReader();
-      reader.readAsDataURL(file);
+      reader.readAsDataURL(image);
       reader.onloadend = () => {
         updateRecipeNewImage(reader.result, recipe);
       };
       reader.onerror = () => {
-        console.error("Something went wrong!");
-        //setErrMsg("Something went wrong!");
+        addToast( 'Något gick fel vid inläsning av ny bild' , { appearance: 'error' });
       };
     }
   };
 
+  // This function is used when a user submits a update to a recipe and the image has also been updated
   const updateRecipeNewImage = async (base64EncodedImage, recipe) => {
-    const recipeId = recipe._id; 
-
-    try {
-      await axios("https://xentras-recipe-backend.herokuapp.com/recipe/upload", {
-        method: "POST",
-        data: JSON.stringify({ data: base64EncodedImage }),
-        headers: { "Content-Type": "application/json" },
-      }).then((response) => {
-        console.log(response.data.url);
-        const imageURL = response.data.url;
-        const recipeSend = {
-          name: recipe.name,
-          source: recipe.source,
-          description: recipe.description,
-          ingredients: recipe.ingredients,
-          steps: recipe.steps,
-          tags: recipe.tags,
-          imageURL: imageURL,
-        };
-
-        axios
-          .patch("https://xentras-recipe-backend.herokuapp.com/recipe/" + recipeId, recipeSend)
-          .then((response2) => {
-            console.log("Recipe updated");
-            if (response2.status === 201) {
-              console.log(response2);
-              props.onUpdate(true);
-              // this.setState({ visible: true, success: true });
-            }
-          })
-          .catch((err) => {
-            // this.setState({ visible: true, success: false });
-            console.error(err);
-          });
-      });
-      //setSuccessMsg("Image uploaded successfully");
-    } catch (err) {
-      console.error(err);
-      //setErrMsg("Something went wrong!");
-    }
+    const response = await postUploadImage(base64EncodedImage);
+    await patchRecipeNewImage(recipe, response)
+      .then(() => {
+        props.onUpdate(true)
+        closeEditRecipeModal();
+        addToast('Receptet har uppdaterats!', { appearance: 'success' });
+      })
+      .catch((error) => {
+        addToast( 'Det gick inte att uppdatera receptet, följande fel uppstod: ' + error.message, { appearance: 'error' });
+    });
   };
 
+  // This function is used whena  user submits a update without changeing the image
   const updateRecipeNoNewImage = async (recipe) => {
-    const recipeId = recipe._id;
-    const recipeSend = {
-      name: recipe.name,
-      source: recipe.source,
-      description: recipe.description,
-      ingredients: recipe.ingredients,
-      steps: recipe.steps,
-      tags: recipe.tags,
-      imageURL: recipe.imageURL,
-    };
-
-    console.log(recipeSend);
-    try {
-      await axios
-        .patch("https://xentras-recipe-backend.herokuapp.com/recipe/" + recipeId, recipeSend)
-        .then((response) => {
-          console.log(response);
-          props.onUpdate(true);
-        });
-        //setSuccessMsg("Image uploaded successfully");
-    } catch (err) {
-      console.error(err);
-      //setErrMsg("Something went wrong!");
-    }
+    await patchRecipeNoNewImage(recipe)
+      .then(() => {
+        props.onUpdate(true)
+        closeEditRecipeModal();
+        addToast('Receptet har uppdaterats!', { appearance: 'success' });
+      })
+      .catch((error) => {
+        addToast( 'Det gick inte att uppdatera receptet, följande fel uppstod: ' + error.message, { appearance: 'error' });
+      });
   };
-
+  
+  // This useEffect will add everything to the store component 
+  // and also make sure that all the input fields have the correct values
   useEffect(() => {
-    const loadRecipe = async () => {
-      await dispatch(actions.load("recipe", props.recipes));
-      await setRecipeLoaded(props.recipe);
-      // console.log(recipeLoaded);
-    };
-    loadRecipe();
-  }, [recipeLoaded]);
+    dispatch(actions.load('recipe', props.recipes));
+    setRecipeLoaded(props.recipes);
+  }, [recipeLoaded, dispatch, props.recipes]);
 
   return (
     <Modal
-      onClose={() => closeModal()}
-      onOpen={() => setOpen(true)}
+      onClose={() => closeEditRecipeModal()}
       open={open}
+      closeOnDimmerClick={false}
     >
       <Modal.Header>Uppdatera recept</Modal.Header>
       <Modal.Content>
@@ -170,7 +130,7 @@ function Editmodal(props) {
                   <div className="column">
                     <div className="ui input">
                       <label
-                        htmlFor="file"
+                        htmlFor="image"
                         className="positive ui labeled icon button"
                       >
                         <i className="image icon"></i>
@@ -178,8 +138,8 @@ function Editmodal(props) {
                       </label>
                       <input
                         type="file"
-                        id="file"
-                        onChange={(e) => handleChange(e)}
+                        id="image"
+                        onChange={(e) => handleImageChange(e)}
                         style={{ display: "none" }}
                       />
                     </div>
@@ -191,7 +151,7 @@ function Editmodal(props) {
                     <img
                       className="ui medium rounded image"
                       alt=""
-                      src={previewFile ? previewFile : props.recipe.imageURL}
+                      src={previewImage ? previewImage : props.recipe.imageURL}
                     />
                   </div>
                 </div>
@@ -209,7 +169,7 @@ function Editmodal(props) {
           content="Klar"
           labelPosition="right"
           icon="checkmark"
-          onClick={() => closeModal()}
+          onClick={() => closeEditRecipeModal()}
           positive
         />
       </Modal.Actions>
@@ -217,4 +177,4 @@ function Editmodal(props) {
   );
 }
 
-export default connect((s) => s)(Editmodal);
+export default connect((s) => s)(EditRecipeModal);

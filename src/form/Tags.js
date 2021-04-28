@@ -1,58 +1,42 @@
-import React from "react";
+import React, { useEffect, useState, useCallback } from "react";
 import { Field, actions } from "react-redux-form";
 import { connect } from "react-redux";
 
-class Tags extends React.Component {
-  constructor(props) {
-    super(props);
+function Tags(props) {
+    const [buttonsEnabled, setButtonsEnabled] = useState(false);
+    const { dispatch } = props;
+    const recipe = props.recipe;
 
-    this.state = {
-      enableButton: false,
+    const onRemoveClick = (i) => {
+        removeTag(i);
+        updateButtonState();
     };
-  }
 
-  async onRemoveClick(i) {
-    await this.removeTag(i);
-    this.updateEnableButtonState();
-  }
+    const onAddClick = () => {
+        addTag();
+        updateButtonState();
+    };
 
-  async onAddClick() {
-    await this.addTagField();
-    this.updateEnableButtonState();
-  }
-
-  removeTag(i) {
-    const { dispatch } = this.props;
-    dispatch(actions.remove("recipe.tags", i))
-    return
-  }
-
-  async addTagField() {
-    const { dispatch } = this.props;
-    dispatch(actions.push("recipe.tags", ""))
-    return
-  }
-
-  updateEnableButtonState() {
-    const { recipe } = this.props;
-    if(recipe.tags.length !== 1) {
-      this.setState({
-        enableButton: true
-      })
-    } else if (recipe.tags.length === 1) {
-      this.setState({
-        enableButton: false
-      })
+    const removeTag = (i) => {
+        dispatch(actions.remove("recipe.tags", i))
     }
-  }
 
-  // This will update the button state when updating a recipe
-  componentDidMount() {    
-    this.updateEnableButtonState();
-  }
+    const addTag = (i) => {
+        dispatch(actions.push("recipe.tags", ""))
+    }
 
-  render() {
-    const { recipe } = this.props;
+    const updateButtonState = useCallback(() => {
+        if (recipe.tags.length !== 1) {
+          setButtonsEnabled(true)
+        } else if (recipe.tags.length === 1) {
+          setButtonsEnabled(false)
+        }
+      }, [recipe.tags.length]);
+
+    useEffect(() => {
+        updateButtonState()
+    }, [updateButtonState])
+    
     return (
       <div>
         <label htmlFor="recipe.tags">Kategori: </label>
@@ -65,9 +49,9 @@ class Tags extends React.Component {
           >
             <input type="text" defaultValue="" />
             <button
-              disabled={!this.state.enableButton}
+              disabled={!buttonsEnabled}
               className="ui red icon button"
-              onClick={() => this.onRemoveClick(i)}
+              onClick={() => onRemoveClick(i)}
             >
               <i className="trash icon"></i>
             </button>
@@ -77,7 +61,7 @@ class Tags extends React.Component {
         <button
             className="positive ui labeled icon button"
             style={{ marginTop: 10 }}
-            onClick={() => this.onAddClick()}
+            onClick={() => onAddClick()}
           >
             <i className="plus icon" />
             Lägg till kategori
@@ -85,7 +69,6 @@ class Tags extends React.Component {
         </div>
       </div>
     );
-  }
 }
 
 export default connect((s) => s)(Tags);

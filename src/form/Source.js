@@ -1,7 +1,7 @@
 import React from "react";
 import { Control } from "react-redux-form";
 
-export default function Source() { 
+function Source() { 
     return (
       <div>
         <label htmlFor="recipe.source">Källa: </label>
@@ -9,3 +9,5 @@ export default function Source() {
       </div>
     );
 }
+
+export default Source;
