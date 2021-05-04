@@ -3,12 +3,12 @@ import { useToasts } from 'react-toast-notifications';
 import { Form, actions } from "react-redux-form";
 import { Button, Modal } from "semantic-ui-react";
 import { connect } from "react-redux";
-import Name from "../../form/Name";
-import Description from "../../form/Description";
-import Ingredients from "../../form/Ingredients";
-import Steps from "../../form/Steps";
-import Tags from "../../form/Tags";
-import Source from "../../form/Source";
+import Name from "../Form/Name";
+import Description from "../Form/Description";
+import Ingredients from "../Form/Ingredients";
+import Steps from "../Form/Steps";
+import Tags from "../Form/Tags";
+import Source from "../Form/Source";
 import { postUploadImage, patchRecipeNoNewImage, patchRecipeNewImage } from "../../api/api.js";
 
 function EditRecipeModal(props) {
@@ -81,6 +81,11 @@ function EditRecipeModal(props) {
   useEffect(() => {
     dispatch(actions.load('recipe', props.recipes));
     setRecipeLoaded(props.recipes);
+
+    // returned function will be called on component unmount 
+    return () => {
+      dispatch(actions.reset('recipe'));
+    }
   }, [recipeLoaded, dispatch, props.recipes]);
 
   return (

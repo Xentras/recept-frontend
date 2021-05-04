@@ -1,12 +1,12 @@
-import React, { useState } from "react";
+import React, { useState, useEffect } from "react";
 import { useToasts } from 'react-toast-notifications';
-import { Form } from "react-redux-form";
-import Name from "../form/Name.js";
-import Description from "../form/Description";
-import Ingredients from "../form/Ingredients";
-import Steps from "../form/Steps";
-import Tags from "../form/Tags";
-import Source from "../form/Source";
+import { Form, actions } from "react-redux-form";
+import Name from "../components/Form/Name.js";
+import Description from "../components/Form/Description";
+import Ingredients from "../components/Form/Ingredients";
+import Steps from "../components/Form/Steps";
+import Tags from "../components/Form/Tags";
+import Source from "../components/Form/Source";
 import { BrowserView, MobileView } from "react-device-detect";
 import { connect } from "react-redux";
 import { postUploadImage, postRecipe } from "../api/api.js";
@@ -15,6 +15,7 @@ function Add(props) {
     const [image, setImage] = useState();
     const [previewImage, setPreviewImage] = useState();
     const { addToast } = useToasts();
+    const { dispatch } = props;
     const recipe = props.recipe;
 
     // This function will run if the user changes the image for the recipe
@@ -47,75 +48,12 @@ function Add(props) {
     });
   };
 
-//   onDismiss = () => {
-//     this.setState({ visible: false });
-//   };
-
-//   uploadImage = async (base64EncodedImage, recipe) => {
-//     const name = recipe.name;
-//     const source = recipe.source;
-//     const description = recipe.description;
-//     const ingredients = recipe.ingredients;
-//     const steps = recipe.steps;
-//     const tags = recipe.tags;
-
-//     try {
-//       await axios("https://xentras-recipe-backend.herokuapp.com/recipe/upload", {
-//         method: "POST",
-//         data: JSON.stringify({ data: base64EncodedImage }),
-//         headers: { "Content-Type": "application/json" },
-//       }).then((response) => {
-//         console.log(response.data.url);
-//         const imageURL = response.data.url;
-//         const recipeSend = {
-//           name,
-//           source,
-//           description,
-//           ingredients,
-//           steps,
-//           tags,
-//           imageURL,
-//         };
-
-//         axios
-//           .post("https://xentras-recipe-backend.herokuapp.com/recipe/", recipeSend)
-//           .then((response2) => {
-//             console.log("Recipe Created");
-//             if (response2.status === 201) {
-//               this.setState({ visible: true, success: true });
-//             }
-//           })
-//           .catch((err) => {
-//             this.setState({ visible: true, success: false });
-//             console.error(err);
-//           });
-//       });
-//       //setSuccessMsg("Image uploaded successfully");
-//     } catch (err) {
-//       console.error(err);
-//       //setErrMsg("Something went wrong!");
-//     }
-//   };
-
-//   componentWillUnmount() {
-//     this.props.dispatch(actions.reset('recipe'));
-//   }
-
-//   handleSubmit = (recipe) => {
-//     console.log(recipe);
-//     const { file } = this.state;
-    
-//     if (!file) return;
-//     const reader = new FileReader();
-//     reader.readAsDataURL(file);
-//     reader.onloadend = () => {
-//       this.uploadImage(reader.result, recipe);
-//     };
-//     reader.onerror = () => {
-//       console.error("Something went wrong!");
-//       //setErrMsg("Something went wrong!");
-//     };
-//   };
+  useEffect(() => {
+    // returned function will be called on component unmount 
+    return () => {
+      dispatch(actions.reset('recipe'));
+    }
+  }, [])
 
     return (
       <Form
