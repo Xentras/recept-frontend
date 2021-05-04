@@ -1,7 +1,9 @@
 import React, { useState, useEffect, useCallback } from "react";
-import { Fieldset, actions, Control } from "react-redux-form";
+import { Fieldset, actions } from "react-redux-form";
 import { connect } from "react-redux";
 import { Popup, Icon } from "semantic-ui-react";
+import Input from "../Common/Input/Input.js";
+import Dropdown from "../Common/Dropdown/Dropdown.js";
 
 function Ingredients(props) {
   const [buttonsEnabledIngredient, setButtonsEnabledIngredient] = useState([
@@ -11,21 +13,25 @@ function Ingredients(props) {
   const { dispatch } = props;
   const recipe = props.recipe;
 
+  // This function will run when the user adds a new portion/person
   const onAddPersonClick = () => {
     addPerson();
     updateButtonStatePerson();
   };
 
+  // This function will run when the user removes a portion/person
   const onRemovePersonClick = (i) => {
     removePerson(i);
     updateButtonStatePerson();
   };
 
+  // This function will run when the user adds a new ingredient
   const onAddIngredientClick = (i) => {
     addIngredient(i);
     updateButtonStateIngredients(i);
   };
 
+  // This function will run when the user removes an ingredient
   const onRemoveIngredientClick = (i, j) => {
     removeIngredient(i, j);
     updateButtonStateIngredients(i);
@@ -74,7 +80,7 @@ function Ingredients(props) {
       // this will update the state everytime a ingredient is added/removed
       for (var i = 0; i < recipe.ingredients.length; i++) {
         if (recipe.ingredients[i].ingredient.length !== 1) {
-          newArr[i] = true; 
+          newArr[i] = true;
         } else if (recipe.ingredients[i].ingredient.length === 1) {
           newArr[i] = false;
         }
@@ -94,7 +100,7 @@ function Ingredients(props) {
   }, [recipe.ingredients.length]);
 
   // This function is used when the ingredientlist and buttonsEnabledIngredient are not the same length
-  // this happens when loading an recipe in the "EditRecipeModal"
+  // this happens when loading a recipe when the user is editing a recipe
   // it will make sure that the button state for remove ingredients buttons are correct
   const updateOnLoad = () => {
     let newArr = buttonsEnabledIngredient; // copying the buttonsEnabledIngredient array
@@ -110,8 +116,8 @@ function Ingredients(props) {
   };
 
   useEffect(() => {
-      updateButtonStateIngredients();
-      updateButtonStatePerson();
+    updateButtonStateIngredients();
+    updateButtonStatePerson();
   }, [updateButtonStatePerson, updateButtonStateIngredients]);
 
   return (
@@ -124,22 +130,17 @@ function Ingredients(props) {
           model={`recipe.ingredients[${i}]`}
           key={i}
         >
-          <div className="two wide column">
+          <div className="four wide column">
             <label htmlFor="size">Antal personer/portioner:</label>
             <Popup
               trigger={<Icon name="info circle" color="blue" />}
               content="Ange hur många personer/portioner som ingredienserna ska räcka till."
               position="top center"
             />
-            <Control.input
-              model=".size"
-              placeholder="Portioner"
-              defaultValue=""
-              id="size"
-            />
+            <Input model={".size"} placeholder={"Portioner"} />
           </div>
-          <div className="fourteen wide column"></div>
-          {recipe.ingredients[i].ingredient.map((test, j) => (
+          <div className="twelve wide column"></div>
+          {recipe.ingredients[i].ingredient.map((ingredients, j) => (
             <Fieldset
               className="ui grid"
               style={{ marginTop: 5 }}
@@ -147,40 +148,16 @@ function Ingredients(props) {
               key={j}
             >
               <div className="two wide column">
-                <Control.input
-                  model=".amount"
-                  placeholder="Mängd"
-                  defaultValue=""
-                />
+                <Input model={".amount"} placeholder={"Mängd"} />
               </div>
               <div className="two wide column">
-                <Control.select model=".unit" defaultValue="">
-                  <option value="empty"></option>
-                  <option value="kg">kg</option>
-                  <option value="hg">hg</option>
-                  <option value="g">g</option>
-                  <option value="l">l</option>
-                  <option value="dl">dl</option>
-                  <option value="cl">cl</option>
-                  <option value="ml">ml</option>
-                  <option value="msk">msk</option>
-                  <option value="tsk">tsk</option>
-                  <option value="krm">krm</option>
-                </Control.select>
+                <Dropdown model={".unit"}/>
               </div>
               <div className="four wide column">
-                <Control.input
-                  model=".name"
-                  placeholder="Ingrediens"
-                  defaultValue=""
-                />
+                <Input model={".name"} placeholder={"Ingrediens"} />
               </div>
               <div className="four wide column">
-                <Control.input
-                  model=".subcategory"
-                  placeholder="Kategori"
-                  defaultValue=""
-                />
+                <Input model={".subcategory"} placeholder={"Kategori"} />
               </div>
               <div className="one wide column">
                 <button
