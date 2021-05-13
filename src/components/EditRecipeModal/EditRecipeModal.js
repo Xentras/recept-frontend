@@ -1,29 +1,30 @@
-import React, { useEffect, useState } from "react";
-import { useToasts } from 'react-toast-notifications';
-import { Form, actions } from "react-redux-form";
+import React, { useState } from "react";
+import { useToasts } from "react-toast-notifications";
 import { Button, Modal } from "semantic-ui-react";
-import { connect } from "react-redux";
+import { Formik, Form } from "formik";
 import Name from "../Form/Name";
 import Description from "../Form/Description";
-import Ingredients from "../Form/Ingredients";
+import Ingredients from "../Form/Ingredients/Ingredients";
 import Steps from "../Form/Steps";
 import Tags from "../Form/Tags";
 import Source from "../Form/Source";
-import { postUploadImage, patchRecipeNoNewImage, patchRecipeNewImage } from "../../api/api.js";
+import {
+  postUploadImage,
+  patchRecipeNoNewImage,
+  patchRecipeNewImage,
+} from "../../api/api.js";
 
 function EditRecipeModal(props) {
-  const [recipeLoaded, setRecipeLoaded] = useState({});
   const [image, setImage] = useState();
   const [previewImage, setPreviewImage] = useState();
   const { addToast } = useToasts();
-  const { dispatch } = props;
   const open = props.modal;
+  const savedState = props.recipes;
 
   // This function will run when the user closes the modal
-  // it will tell "recipe.js" that it is closed and reset the recipe redux state
+  // it will tell "recipe.js" that it is closed
   const closeEditRecipeModal = () => {
     props.onChange(false);
-    dispatch(actions.reset('recipe'))
   };
 
   // This function will run if the user changes the image for the recipe
@@ -32,7 +33,7 @@ function EditRecipeModal(props) {
     setPreviewImage(URL.createObjectURL(e.target.files[0]));
   };
 
-  // This function is used when the user updates the recipe 
+  // This function is used when the user updates the recipe
   const handleSubmit = (recipe) => {
     // Check if the user changed the image for the recipe or not
     if (!image) {
@@ -44,7 +45,9 @@ function EditRecipeModal(props) {
         updateRecipeNewImage(reader.result, recipe);
       };
       reader.onerror = () => {
-        addToast( 'Något gick fel vid inläsning av ny bild' , { appearance: 'error' });
+        addToast("Något gick fel vid inläsning av ny bild", {
+          appearance: "error",
+        });
       };
     }
   };
@@ -54,39 +57,35 @@ function EditRecipeModal(props) {
     const response = await postUploadImage(base64EncodedImage);
     await patchRecipeNewImage(recipe, response)
       .then(() => {
-        props.onUpdate(true)
+        props.onUpdate(true);
         closeEditRecipeModal();
-        addToast('Receptet har uppdaterats!', { appearance: 'success' });
+        addToast("Receptet har uppdaterats!", { appearance: "success" });
       })
       .catch((error) => {
-        addToast( 'Det gick inte att uppdatera receptet, följande fel uppstod: ' + error.message, { appearance: 'error' });
-    });
+        addToast(
+          "Det gick inte att uppdatera receptet, följande fel uppstod: " +
+            error.message,
+          { appearance: "error" }
+        );
+      });
   };
 
   // This function is used whena  user submits a update without changeing the image
   const updateRecipeNoNewImage = async (recipe) => {
     await patchRecipeNoNewImage(recipe)
       .then(() => {
-        props.onUpdate(true)
+        props.onUpdate(true);
         closeEditRecipeModal();
-        addToast('Receptet har uppdaterats!', { appearance: 'success' });
+        addToast("Receptet har uppdaterats!", { appearance: "success" });
       })
       .catch((error) => {
-        addToast( 'Det gick inte att uppdatera receptet, följande fel uppstod: ' + error.message, { appearance: 'error' });
+        addToast(
+          "Det gick inte att uppdatera receptet, följande fel uppstod: " +
+            error.message,
+          { appearance: "error" }
+        );
       });
   };
-  
-  // This useEffect will add everything to the store component 
-  // and also make sure that all the input fields have the correct values
-  useEffect(() => {
-    dispatch(actions.load('recipe', props.recipes));
-    setRecipeLoaded(props.recipes);
-
-    // returned function will be called on component unmount 
-    return () => {
-      dispatch(actions.reset('recipe'));
-    }
-  }, [recipeLoaded, dispatch, props.recipes]);
 
   return (
     <Modal
@@ -95,79 +94,94 @@ function EditRecipeModal(props) {
       closeOnDimmerClick={false}
     >
       <Modal.Header>Uppdatera recept</Modal.Header>
-      <Modal.Content>
-        {recipeLoaded && (
-          <Form
-            className="ui container"
-            model="recipe"
-          >
-            <div className="ui form">
-              <div className="ui grid">
-                <div className="two column row">
-                  <div className="column">
-                    <Name />
-                  </div>
-                  <div className="column">
-                    <Source />
-                  </div>
-                </div>
-                <div className="one column row">
-                  <div className="column">
-                    <Description />
-                  </div>
-                </div>
-                <div className="one column row">
-                  <div className="column">
-                    <Ingredients />
-                  </div>
-                </div>
-                <div className="three column row">
-                  <div className="column">
-                    <Steps />
-                  </div>
-                  <div className="column">
-                    <Tags />
-                  </div>
-                  <div className="column" />
-                </div>
-                <div className="three column row">
-                  <div className="column"></div>
-                  <div className="column">
-                    <div className="ui input">
-                      <label
-                        htmlFor="image"
-                        className="positive ui labeled icon button"
-                      >
-                        <i className="image icon"></i>
-                        Lägg till bild
-                      </label>
-                      <input
-                        type="file"
-                        id="image"
-                        onChange={(e) => handleImageChange(e)}
-                        style={{ display: "none" }}
-                      />
+      <Modal.Content image scrolling>
+        <Formik
+          initialValues={savedState}
+          validateOnBlur={false}
+          onSubmit={(values) => {
+            handleSubmit(values);
+          }}
+          enableReinitialize
+        >
+          {({ values }) => (
+            <Form className="ui container">
+              <div className="ui form">
+                <div className="ui grid">
+                  <div className="two column row">
+                    <div className="column">
+                      <Name />
+                    </div>
+                    <div className="column">
+                      <Source />
                     </div>
                   </div>
-                  <div className="column"></div>
-                </div>
-                <div className="on column row">
-                  <div className="column" style={{ textAlign: "center" }}>
-                    <img
-                      className="ui medium rounded image"
-                      alt=""
-                      src={previewImage ? previewImage : props.recipe.imageURL}
-                    />
+                  <div className="one column row">
+                    <div className="column">
+                      <Description />
+                    </div>
+                  </div>
+                  <div className="one column row">
+                    <div className="column">
+                      <Ingredients values={values} />
+                    </div>
+                  </div>
+                  <div className="three column row">
+                    <div className="eight wide column">
+                      <Steps values={values} />
+                    </div>
+                    <div className="column">
+                      <Tags values={values} />
+                    </div>
+                  </div>
+                  <div className="three column row">
+                    <div className="column">
+                    <div className="ui input">
+                          <label
+                            htmlFor="file"
+                            className="positive ui labeled icon button"
+                          >
+                            <i className="image icon"></i>
+                            Lägg till bild
+                          </label>
+                          <input
+                            type="file"
+                            id="file"
+                            onChange={(e) => handleImageChange(e)}
+                            style={{ display: "none" }}
+                          />
+                        </div>
+                        <div style={{ marginTop: "10%" }}>
+                          <img
+                            className="ui left rounded image"
+                            alt=""
+                            src={
+                              previewImage
+                                ? previewImage
+                                : props.recipes.imageURL
+                            }
+                          />
+                        </div>
+                    </div>
+                    <div className="column">
+                    </div>
+                    <div className="column"></div>
+                  </div>
+                  <div className="one column row">
+                    <div className="column">
+                      <button
+                        className="ui labeled icon primary button"
+                        type="submit"
+                      >
+                        <i className="save icon"></i>
+                        Spara recept!
+                      </button>
+                    </div>
                   </div>
                 </div>
               </div>
-              <button className="ui labeled icon primary button" type="submit" style={{ marginTop: 10}} onClick={() => handleSubmit(props.recipe)}>
-                <i className="save icon"></i>
-                Uppdatera recept!
-              </button>
-            </div>
-          </Form>
-        )}
+            </Form>
+          )}
+        </Formik>
       </Modal.Content>
       <Modal.Actions>
         <Button
@@ -182,4 +196,4 @@ function EditRecipeModal(props) {
   );
 }
 
-export default connect((s) => s)(EditRecipeModal);
+export default EditRecipeModal;

@@ -1,13 +1,13 @@
 import React from "react";
-import { Control } from "react-redux-form";
+import { Field } from "formik";
 
-function Source() { 
+function NewSource() { 
     return (
-      <div>
-        <label htmlFor="recipe.source">Källa: </label>
-        <Control.text model="recipe.source" id="recipe.source" />
+      <div className="field">
+        <label htmlFor="values.source">Källa</label>
+        <Field name={`source`} placeholder="Källa" type="text" />
       </div>
     );
 }
 
-export default Source;
+export default NewSource;
