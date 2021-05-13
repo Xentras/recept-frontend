@@ -4,13 +4,11 @@ import { BrowserRouter as Router, Switch, Route } from "react-router-dom";
 import Search from "./pages/Search.js";
 import Add from "./pages/Add.js";
 import MenuNavBar from "./components/MenuBar/MenuNavBar.js";
-import { Provider } from "react-redux";
-import store from "./store.js";
+
 
 function App() {
   return (
     <div className="container">
-      <Provider store={store}>
         <Router>
           <MenuNavBar />
           <ToastProvider placement="top-center" autoDismiss>
@@ -20,7 +18,6 @@ function App() {
             </Switch>
           </ToastProvider>
         </Router>
-      </Provider>
     </div>
   );
 }

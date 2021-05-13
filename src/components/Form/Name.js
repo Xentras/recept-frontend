@@ -1,13 +1,14 @@
 import React from "react";
-import { Control } from "react-redux-form";
+import { Field, ErrorMessage } from "formik";
 
-function Name() { 
+function NewName() { 
     return (
-      <div>
-        <label htmlFor="recipe.name">Namn: </label>
-        <Control.text model="recipe.name" id="recipe.name" />
+      <div className="required field">
+        <label htmlFor="values.name">Namn</label>
+        <Field name={`name`} placeholder="Namn" type="text" />
+        <span style={{ color: 'red' }}><ErrorMessage name="name" /></span>
       </div>
     );
 }
 
-export default Name;
+export default NewName;

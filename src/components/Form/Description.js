@@ -1,13 +1,13 @@
 import React from "react";
-import { Control } from "react-redux-form";
+import { Field } from "formik";
 
-function Description() { 
-    return (
-      <div className="field">
-        <label htmlFor="recipe.description">Beskrivning: </label>
-        <Control.textarea model="recipe.description" id="recipe.description" />
-      </div>
-    );
+function NewDescription() {
+  return (
+    <div className="field">
+      <label htmlFor="values.description">Beskrivning</label>
+      <Field name={`description`} placeholder="Beskrivning" as="textarea" />
+    </div>
+  );
 }
 
-export default Description;
+export default NewDescription;

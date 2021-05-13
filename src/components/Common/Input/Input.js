@@ -1,14 +1,18 @@
 import React from "react";
-import { Control } from "react-redux-form";
-import { connect } from "react-redux";
+import { Field } from "formik";
 
 function Input(props) {
-  const model = props.model;
+  const name = props.name;
   const placeholder = props.placeholder;
+  const type = props.type;
 
   return (
-    <Control.input model={model} placeholder={placeholder} defaultValue="" />
+    <Field
+      name={name}
+      placeholder={placeholder}
+      type={type}
+    />
   );
 }
 
-export default connect((s) => s)(Input);
+export default Input;

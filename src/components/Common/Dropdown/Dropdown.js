@@ -1,12 +1,15 @@
 import React from "react";
-import { Control } from "react-redux-form";
-import { connect } from "react-redux";
+import { Field } from "formik";
 
 function Dropdown(props) {
-  const model = props.model;
+  const index = props.index;
+  const index2 = props.index2;
 
   return (
-    <Control.select model={model} defaultValue="">
+    <Field
+      as="select"
+      name={`ingredients[${index}].ingredient[${index2}].unit`}
+    >
       <option value="empty"></option>
       <option value="kg">kg</option>
       <option value="hg">hg</option>
@@ -18,8 +21,8 @@ function Dropdown(props) {
       <option value="msk">msk</option>
       <option value="tsk">tsk</option>
       <option value="krm">krm</option>
-    </Control.select>
+    </Field>
   );
 }
 
-export default connect((s) => s)(Dropdown);
+export default Dropdown;

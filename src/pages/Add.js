@@ -1,67 +1,112 @@
-import React, { useState, useEffect } from "react";
-import { useToasts } from 'react-toast-notifications';
-import { Form, actions } from "react-redux-form";
-import Name from "../components/Form/Name.js";
-import Description from "../components/Form/Description";
-import Ingredients from "../components/Form/Ingredients";
-import Steps from "../components/Form/Steps";
-import Tags from "../components/Form/Tags";
-import Source from "../components/Form/Source";
+import React, { useState } from "react";
+import { useToasts } from "react-toast-notifications";
+import { Formik, Form } from "formik";
 import { BrowserView, MobileView } from "react-device-detect";
-import { connect } from "react-redux";
 import { postUploadImage, postRecipe } from "../api/api.js";
+import Tags from "../components/Form/Tags.js";
+import Steps from "../components/Form/Steps.js";
+import Name from "../components/Form/Name.js";
+import Description from "../components/Form/Description.js";
+import Source from "../components/Form/Source.js";
+import Ingredient from "../components/Form/Ingredients/Ingredients.js";
+import CustomErrorMessage from "../components/Common/CustomErrorMessage/CustomErrorMessage.js";
+import * as Yup from "yup";
 
-function Add(props) {
-    const [image, setImage] = useState();
-    const [previewImage, setPreviewImage] = useState();
-    const { addToast } = useToasts();
-    const { dispatch } = props;
-    const recipe = props.recipe;
+function Add() {
+  const [image, setImage] = useState();
+  const [previewImage, setPreviewImage] = useState();
+  const { addToast } = useToasts();
 
-    // This function will run if the user changes the image for the recipe
-    const handleImageChange = (e) => {
-        setImage(e.target.files[0]);
-        setPreviewImage(URL.createObjectURL(e.target.files[0]));
-    };
-
-    // This function is used when the user updates the recipe 
-  const handleSubmit = (recipe) => {
-      const reader = new FileReader();
-      reader.readAsDataURL(image);
-      reader.onloadend = () => {
-        postNewRecipe(reader.result, recipe);
-      };
-      reader.onerror = () => {
-        addToast( 'Något gick fel vid inläsning av ny bild' , { appearance: 'error' });
-      };
+  const initialRecipeState = {
+    name: "",
+    source: "",
+    description: "",
+    ingredients: [
+      {
+        size: "",
+        ingredient: [{ amount: "", unit: "", name: "", subcategory: "" }],
+      },
+    ],
+    steps: [""],
+    tags: [""],
+    file: "",
+    previewFile: "",
   };
 
-  // This function is used when a user submits a update to a recipe and the image has also been updated
-  const postNewRecipe = async (base64EncodedImage, recipe) => {
+  const DisplayingErrorMessagesSchema = Yup.object().shape({
+    name: Yup.string().required("Obligatoriskt fält"),
+    ingredients: Yup.array().of(
+      Yup.object().shape({
+        size: Yup.string().required("Obligatoriskt fält"),
+        ingredient: Yup.array().of(
+          Yup.object().shape({
+            amount: Yup.string().required("Obligatoriskt fält"),
+            name: Yup.string().required("Obligatoriskt fält"),
+          })
+        ),
+      })
+    ),
+    steps: Yup.array()
+      .of(Yup.string().required("Obligatoriskt fält"))
+      .strict()
+      .required(),
+    tags: Yup.array()
+      .of(Yup.string().required("Obligatoriskt fält"))
+      .strict()
+      .required(),
+    file: Yup.string().required("Obligatoriskt med bild"),
+  });
+
+  // This function will run if the user adds an image to the recipe
+  const handleImageChange = (e) => {
+    setImage(e.target.files[0]);
+    setPreviewImage(URL.createObjectURL(e.target.files[0]));
+  };
+
+  // This function is used when the user submits the recipe
+  // it will first try and read the image that the user is trying to add
+  // if that works it will try and sumbit the recipe
+  const handleSubmit = (values) => {
+    const reader = new FileReader();
+    reader.readAsDataURL(image);
+    reader.onloadend = () => {
+      postNewRecipe(reader.result, values);
+    };
+    reader.onerror = () => {
+      addToast("Något gick fel vid inläsning av ny bild", {
+        appearance: "error",
+      });
+    };
+  };
+
+  // This function is used when a user submits the recipe
+  const postNewRecipe = async (base64EncodedImage, values) => {
     const response = await postUploadImage(base64EncodedImage);
-    await postRecipe(recipe, response)
+    await postRecipe(values, response)
       .then(() => {
-        addToast('Receptet har uppdaterats!', { appearance: 'success' });
+        addToast("Receptet har Sparats!", { appearance: "success" });
       })
       .catch((error) => {
-        addToast( 'Det gick inte att uppdatera receptet, följande fel uppstod: ' + error.message, { appearance: 'error' });
-    });
+        addToast(
+          "Det gick inte att spara receptet, följande fel uppstod: " +
+            error.message,
+          { appearance: "error" }
+        );
+      });
   };
 
-  useEffect(() => {
-    // returned function will be called on component unmount 
-    return () => {
-      dispatch(actions.reset('recipe'));
-    }
-  }, [])
-
-    return (
-      <Form
-        className="ui container"
-        model="recipe"
-      >
-        <div className="ui form">
-          <BrowserView>
+  return (
+    <Formik
+      initialValues={initialRecipeState}
+      validationSchema={DisplayingErrorMessagesSchema}
+      validateOnBlur={false}
+      onSubmit={(values) => {
+        handleSubmit(values);
+      }}
+    >
+      {({ values, setFieldValue }) => (
+        <Form className="ui container">
+          <div className="ui form">
             <div className="ui grid">
               <div className="two column row">
                 <div className="column">
@@ -78,20 +123,18 @@ function Add(props) {
               </div>
               <div className="one column row">
                 <div className="column">
-                  <Ingredients />
+                  <Ingredient values={values} />
                 </div>
               </div>
               <div className="three column row">
-                <div className="column">
-                  <Steps />
+                <div className="eight wide column">
+                  <Steps values={values} />
                 </div>
                 <div className="column">
-                  <Tags />
+                  <Tags values={values} />
                 </div>
-                <div className="column" />
               </div>
               <div className="three column row">
-                <div className="column"></div>
                 <div className="column">
                   <div className="ui input">
                     <label
@@ -104,41 +147,45 @@ function Add(props) {
                     <input
                       type="file"
                       id="file"
-                      onChange={(e) => handleImageChange(e)}
+                      onChange={(e) => {
+                        handleImageChange(e);
+                        setFieldValue("file", e.currentTarget.files[0]);
+                      }}
                       style={{ display: "none" }}
+                    />
+                  </div>
+                  <div>
+                    <CustomErrorMessage name={"previewFile"} />
+                  </div>
+                  <div style={{ marginTop: "10%" }}>
+                    <img
+                      className="ui left medium image"
+                      alt=""
+                      src={previewImage}
                     />
                   </div>
                 </div>
                 <div className="column"></div>
+                <div className="column"></div>
               </div>
-              <div className="on column row">
-                <div className="column" style={{ textAlign: "center" }}>
-                  <img alt="" src={previewImage} />
+              <div className="one column row">
+                <div className="column">
+                  <button
+                    className="ui labeled icon primary button"
+                    type="submit"
+                  >
+                    <i className="save icon"></i>
+                    Spara recept!
+                  </button>
                 </div>
               </div>
             </div>
-          </BrowserView>
-          <MobileView>
-            <Name />
-            <Source />
-            <Description />
-            <Ingredients />
-            <Steps />
-            <Tags />
-            <div>
-              <input type="file" onChange={(e) => handleImageChange(e)} />
-              <br />
-              <img alt="" src={previewImage} />
-            </div>
-          </MobileView>
-        </div>
-        <button className="ui labeled icon primary button" type="submit" onClick={() => handleSubmit(recipe)}>
-          <i className="save icon"></i>
-          Spara recept!
-        </button>
-        <div style={{ height: 150 }}></div>
-      </Form>
-    );
+            <div style={{ height: 100 }}></div>
+          </div>
+        </Form>
+      )}
+    </Formik>
+  );
 }
 
-export default connect((s) => s)(Add);
+export default Add;
