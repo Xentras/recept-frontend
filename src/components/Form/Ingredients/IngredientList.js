@@ -1,5 +1,5 @@
 import React, { useState, useEffect, useCallback } from "react";
-import { Field, ErrorMessage, FieldArray } from "formik";
+import { FieldArray } from "formik";
 import { Popup, Icon } from "semantic-ui-react";
 import Input from "../../Common/Input/Input.js";
 import Dropdown from "../../Common/Dropdown/Dropdown.js";
@@ -124,7 +124,7 @@ function IngredientList(props) {
                 <div className="two wide column">
                   <button
                     type="button"
-                    style={{ marginTop: 36 }}
+                    style={{ marginTop: 25 }}
                     disabled={!buttonsEnabledIngredient[index]}
                     className="ui red icon button"
                     onClick={() => {

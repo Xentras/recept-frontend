@@ -13,6 +13,7 @@ import {
   patchRecipeNoNewImage,
   patchRecipeNewImage,
 } from "../../api/api.js";
+import * as Yup from "yup";
 
 function EditRecipeModal(props) {
   const [image, setImage] = useState();
@@ -27,6 +28,45 @@ function EditRecipeModal(props) {
     props.onChange(false);
   };
 
+  const initialRecipeState = {
+    name: "",
+    source: "",
+    description: "",
+    ingredients: [
+      {
+        size: "",
+        ingredient: [{ amount: "", unit: "", name: "", subcategory: "" }],
+      },
+    ],
+    steps: [""],
+    tags: [""],
+    file: "",
+    previewFile: "",
+  };
+
+  const DisplayingErrorMessagesSchema = Yup.object().shape({
+    name: Yup.string().required("Obligatoriskt fält"),
+    ingredients: Yup.array().of(
+      Yup.object().shape({
+        size: Yup.string().required("Obligatoriskt fält"),
+        ingredient: Yup.array().of(
+          Yup.object().shape({
+            amount: Yup.string().required("Obligatoriskt fält"),
+            name: Yup.string().required("Obligatoriskt fält"),
+          })
+        ),
+      })
+    ),
+    steps: Yup.array()
+      .of(Yup.string().required("Obligatoriskt fält"))
+      .strict()
+      .required(),
+    tags: Yup.array()
+      .of(Yup.string().required("Obligatoriskt fält"))
+      .strict()
+      .required(),
+  });
+
   // This function will run if the user changes the image for the recipe
   const handleImageChange = (e) => {
     setImage(e.target.files[0]);
@@ -34,15 +74,15 @@ function EditRecipeModal(props) {
   };
 
   // This function is used when the user updates the recipe
-  const handleSubmit = (recipe) => {
+  const handleSubmit = (values) => {
     // Check if the user changed the image for the recipe or not
     if (!image) {
-      updateRecipeNoNewImage(recipe);
+      updateRecipeNoNewImage(values);
     } else {
       const reader = new FileReader();
       reader.readAsDataURL(image);
       reader.onloadend = () => {
-        updateRecipeNewImage(reader.result, recipe);
+        updateRecipeNewImage(reader.result, values);
       };
       reader.onerror = () => {
         addToast("Något gick fel vid inläsning av ny bild", {
@@ -53,9 +93,9 @@ function EditRecipeModal(props) {
   };
 
   // This function is used when a user submits a update to a recipe and the image has also been updated
-  const updateRecipeNewImage = async (base64EncodedImage, recipe) => {
+  const updateRecipeNewImage = async (base64EncodedImage, values) => {
     const response = await postUploadImage(base64EncodedImage);
-    await patchRecipeNewImage(recipe, response)
+    await patchRecipeNewImage(values, response)
       .then(() => {
         props.onUpdate(true);
         closeEditRecipeModal();
@@ -71,8 +111,8 @@ function EditRecipeModal(props) {
   };
 
   // This function is used whena  user submits a update without changeing the image
-  const updateRecipeNoNewImage = async (recipe) => {
-    await patchRecipeNoNewImage(recipe)
+  const updateRecipeNoNewImage = async (values) => {
+    await patchRecipeNoNewImage(values)
       .then(() => {
         props.onUpdate(true);
         closeEditRecipeModal();
@@ -96,12 +136,14 @@ function EditRecipeModal(props) {
       <Modal.Header>Uppdatera recept</Modal.Header>
       <Modal.Content image scrolling>
         <Formik
+          enableReinitialize={true}
           initialValues={savedState}
+          validationSchema={DisplayingErrorMessagesSchema}
           validateOnBlur={false}
-          onSubmit={(values) => {
+          validateOnMount={true}
+          onSubmit={async (values) => {
             handleSubmit(values);
           }}
-          enableReinitialize
         >
           {({ values }) => (
             <Form className="ui container">
@@ -135,35 +177,32 @@ function EditRecipeModal(props) {
                   </div>
                   <div className="three column row">
                     <div className="column">
-                    <div className="ui input">
-                          <label
-                            htmlFor="file"
-                            className="positive ui labeled icon button"
-                          >
-                            <i className="image icon"></i>
-                            Lägg till bild
-                          </label>
-                          <input
-                            type="file"
-                            id="file"
-                            onChange={(e) => handleImageChange(e)}
-                            style={{ display: "none" }}
-                          />
-                        </div>
-                        <div style={{ marginTop: "10%" }}>
-                          <img
-                            className="ui left rounded image"
-                            alt=""
-                            src={
-                              previewImage
-                                ? previewImage
-                                : props.recipes.imageURL
-                            }
-                          />
-                        </div>
+                      <div className="ui input">
+                        <label
+                          htmlFor="file"
+                          className="positive ui labeled icon button"
+                        >
+                          <i className="image icon"></i>
+                          Lägg till bild
+                        </label>
+                        <input
+                          type="file"
+                          id="file"
+                          onChange={(e) => handleImageChange(e)}
+                          style={{ display: "none" }}
+                        />
+                      </div>
+                      <div style={{ marginTop: "10%" }}>
+                        <img
+                          className="ui left rounded image"
+                          alt=""
+                          src={
+                            previewImage ? previewImage : props.recipes.imageURL
+                          }
+                        />
+                      </div>
                     </div>
-                    <div className="column">
-                    </div>
+                    <div className="column"></div>
                     <div className="column"></div>
                   </div>
                   <div className="one column row">
@@ -173,7 +212,7 @@ function EditRecipeModal(props) {
                         type="submit"
                       >
                         <i className="save icon"></i>
-                        Spara recept!
+                        Uppdatera recept!
                       </button>
                     </div>
                   </div>
