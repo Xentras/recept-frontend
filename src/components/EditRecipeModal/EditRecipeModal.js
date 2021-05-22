@@ -1,4 +1,4 @@
-import React, { useState } from "react";
+import React, { useState, useRef } from "react";
 import { useToasts } from "react-toast-notifications";
 import { Button, Modal } from "semantic-ui-react";
 import { Formik, Form } from "formik";
@@ -21,6 +21,7 @@ function EditRecipeModal(props) {
   const { addToast } = useToasts();
   const open = props.modal;
   const savedState = props.recipes;
+  const formRef = useRef()
 
   // This function will run when the user closes the modal
   // it will tell "recipe.js" that it is closed
@@ -28,22 +29,13 @@ function EditRecipeModal(props) {
     props.onChange(false);
   };
 
-  const initialRecipeState = {
-    name: "",
-    source: "",
-    description: "",
-    ingredients: [
-      {
-        size: "",
-        ingredient: [{ amount: "", unit: "", name: "", subcategory: "" }],
-      },
-    ],
-    steps: [""],
-    tags: [""],
-    file: "",
-    previewFile: "",
-  };
-
+  const submitFromOutsideForm = () => {
+    if (formRef.current) {
+      if(formRef.current.isValid) {
+        formRef.current.handleSubmit()
+      }
+    }
+  }
   const DisplayingErrorMessagesSchema = Yup.object().shape({
     name: Yup.string().required("Obligatoriskt fält"),
     ingredients: Yup.array().of(
@@ -144,6 +136,7 @@ function EditRecipeModal(props) {
           onSubmit={async (values) => {
             handleSubmit(values);
           }}
+          innerRef={formRef}
         >
           {({ values }) => (
             <Form className="ui container">
@@ -206,15 +199,6 @@ function EditRecipeModal(props) {
                     <div className="column"></div>
                   </div>
                   <div className="one column row">
-                    <div className="column">
-                      <button
-                        className="ui labeled icon primary button"
-                        type="submit"
-                      >
-                        <i className="save icon"></i>
-                        Uppdatera recept!
-                      </button>
-                    </div>
                   </div>
                 </div>
               </div>
@@ -224,11 +208,19 @@ function EditRecipeModal(props) {
       </Modal.Content>
       <Modal.Actions>
         <Button
-          content="Klar"
+          type="submit"
+          content="Uppdatera recept"
           labelPosition="right"
-          icon="checkmark"
+          icon="save"
+          onClick={() => submitFromOutsideForm()}
+          primary
+        />
+        <Button
+          content="Stäng"
+          labelPosition="right"
+          icon="close"
           onClick={() => closeEditRecipeModal()}
-          positive
+          negative
         />
       </Modal.Actions>
     </Modal>

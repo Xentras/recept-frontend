@@ -4,7 +4,7 @@ import axios from "axios";
 // This is used when a user searches for a recipe
 const getThumbnail = async (text) => {
   return await axios.get(
-    "https://xentras-recipe-backend.herokuapp.com/recipe/thumbnail/" + text,
+    "https://" + process.env.REACT_APP_API_KEY + ".herokuapp.com/recipe/thumbnail/" + text,
     {}
   );
 };
@@ -13,14 +13,14 @@ const getThumbnail = async (text) => {
 // This is used when a user selects a recipe from the search results or after they have updated an existing recipe
 const getRecipe = async (recipeName) => {
   return await axios.get(
-    "https://xentras-recipe-backend.herokuapp.com/recipe/" + recipeName,
+    "https://" + process.env.REACT_APP_API_KEY + ".herokuapp.com/recipe/" + recipeName,
     {}
   );
 };
 
 const postUploadImage = async (base64EncodedImage) => {
   return await axios(
-    "https://xentras-recipe-backend.herokuapp.com/recipe/upload",
+    "https://" + process.env.REACT_APP_API_KEY + ".herokuapp.com/recipe/upload",
     {
       method: "POST",
       data: JSON.stringify({ data: base64EncodedImage }),
@@ -39,7 +39,7 @@ const postRecipe = async (recipe, response) => {
     tags: recipe.tags,
     imageURL: response.data.url,
   };
-  return await axios.post("https://xentras-recipe-backend.herokuapp.com/recipe/", recipeSend)
+  return await axios.post("https://" + process.env.REACT_APP_API_KEY + ".herokuapp.com/recipe/", recipeSend)
 }
 
 const patchRecipeNoNewImage = async (recipe) => {
@@ -55,7 +55,7 @@ const patchRecipeNoNewImage = async (recipe) => {
   };
 
   return await axios.patch(
-    "https://xentras-recipe-backend.herokuapp.com/recipe/" + recipeId,
+    "https://" + process.env.REACT_APP_API_KEY + ".herokuapp.com/recipe/" + recipeId,
     recipeSend
   );
 };
@@ -73,7 +73,7 @@ const patchRecipeNewImage = async (recipe, response) => {
   };
 
   return await axios.patch(
-    "https://xentras-recipe-backend.herokuapp.com/recipe/" + recipeId,
+    "https://" + process.env.REACT_APP_API_KEY + ".herokuapp.com/recipe/" + recipeId,
     recipeSend
   );
 };
