@@ -28,6 +28,14 @@ function RecipeContent(props) {
     }
   };
 
+  const removeEmptyText = (unit) => {
+    if (unit === "empty") {
+      return "";
+    } else {
+      return unit;
+    }
+  };
+
   return (
     <div className="two column row">
       <div className="column">
@@ -56,7 +64,7 @@ function RecipeContent(props) {
                   {currentIngredientList[j].ingredients.map((ingredient, i) => {
                     return (
                       <div key={i} className="item">
-                        {ingredient.amount} {ingredient.unit} {ingredient.name}
+                        {ingredient.amount} {removeEmptyText(ingredient.unit)} {ingredient.name}
                       </div>
                     );
                   })}
