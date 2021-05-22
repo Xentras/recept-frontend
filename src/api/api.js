@@ -37,7 +37,7 @@ const postRecipe = async (recipe, response) => {
     ingredients: recipe.ingredients,
     steps: recipe.steps,
     tags: recipe.tags,
-    imageURL: response.data.url,
+    imageURL: response.data.secure_url,
   };
   return await axios.post("https://" + process.env.REACT_APP_API_KEY + ".herokuapp.com/recipe/", recipeSend)
 }
@@ -69,7 +69,7 @@ const patchRecipeNewImage = async (recipe, response) => {
     ingredients: recipe.ingredients,
     steps: recipe.steps,
     tags: recipe.tags,
-    imageURL: response.data.url,
+    imageURL: response.data.secure_url,
   };
 
   return await axios.patch(
