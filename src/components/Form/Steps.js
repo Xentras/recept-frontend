@@ -1,4 +1,5 @@
 import React, { useEffect, useState, useCallback } from "react";
+import CustomPopup from "../Common/CustomPopup/CustomPopup.js";
 import { Field, FieldArray, ErrorMessage } from "formik";
 
 function NewSteps(props) {
@@ -27,7 +28,13 @@ function NewSteps(props) {
         {({ remove, push }) => (
           <div>
             <div className="required field" style={{ margin: "0px" }}>
-              <label htmlFor="values.steps">Steg</label>
+              <label htmlFor="values.steps">
+                Steg
+                <CustomPopup
+                  content="Här skriver man vilken ordning som allt ska göras i, man behöver inte lägga till nummer i början."
+                  position="top center"
+                />
+              </label>
             </div>
             {values.steps.length > 0 &&
               values.steps.map((steps, index) => (

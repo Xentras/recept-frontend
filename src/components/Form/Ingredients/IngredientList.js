@@ -1,9 +1,9 @@
 import React, { useState, useEffect, useCallback } from "react";
 import { FieldArray } from "formik";
-import { Popup, Icon } from "semantic-ui-react";
 import Input from "../../Common/Input/Input.js";
 import Dropdown from "../../Common/Dropdown/Dropdown.js";
 import CustomErrorMessage from "../../Common/CustomErrorMessage/CustomErrorMessage.js";
+import CustomPopup from "../../Common/CustomPopup/CustomPopup.js";
 
 function IngredientList(props) {
   const [buttonsEnabledIngredient, setButtonsEnabledIngredient] = useState([
@@ -65,11 +65,11 @@ function IngredientList(props) {
               <div className="ui grid" key={index2}>
                 <div className="two wide column">
                   <div className="required field" style={{ margin: "0px" }}>
-                  <label
-                    htmlFor={`ingredients[${index}].ingredient[${index2}].amount`}
-                  >
-                    Mängd
-                  </label>
+                    <label
+                      htmlFor={`ingredients[${index}].ingredient[${index2}].amount`}
+                    >
+                      Mängd
+                    </label>
                   </div>
                   <Input
                     name={`ingredients[${index}].ingredient[${index2}].amount`}
@@ -81,22 +81,22 @@ function IngredientList(props) {
                   />
                 </div>
                 <div className="two wide column">
-                <div className="field" style={{ margin: "0px" }}>
-                  <label
-                    htmlFor={`ingredients[${index}].ingredient[${index2}].unit`}
-                  >
-                    Enhet
-                  </label>
+                  <div className="field" style={{ margin: "0px" }}>
+                    <label
+                      htmlFor={`ingredients[${index}].ingredient[${index2}].unit`}
+                    >
+                      Enhet
+                    </label>
                   </div>
                   <Dropdown index={index} index2={index2} />
                 </div>
                 <div className="four wide column">
-                <div className="required field" style={{ margin: "0px" }}>
-                  <label
-                    htmlFor={`ingredients[${index}].ingredient[${index2}].name`}
-                  >
-                    Ingrediens
-                  </label>
+                  <div className="required field" style={{ margin: "0px" }}>
+                    <label
+                      htmlFor={`ingredients[${index}].ingredient[${index2}].name`}
+                    >
+                      Ingrediens
+                    </label>
                   </div>
                   <Input
                     name={`ingredients[${index}].ingredient[${index2}].name`}
@@ -108,12 +108,16 @@ function IngredientList(props) {
                   />
                 </div>
                 <div className="four wide column">
-                <div className="field" style={{ margin: "0px" }}>
-                  <label
-                    htmlFor={`ingredients[${index}].ingredient[${index2}].subcategory`}
-                  >
-                    Kategori
-                  </label>
+                  <div className="field" style={{ margin: "0px" }}>
+                    <label
+                      htmlFor={`ingredients[${index}].ingredient[${index2}].subcategory`}
+                    >
+                      Kategori
+                      <CustomPopup
+                        content="Här kan man t.ex. skriva 'Deg' om samma ingrediensen kommer användas till andra saker."
+                        position="top center"
+                      />
+                    </label>
                   </div>
                   <Input
                     name={`ingredients[${index}].ingredient[${index2}].subcategory`}
