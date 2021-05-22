@@ -134,38 +134,55 @@ function Add() {
                   <Tags values={values} />
                 </div>
               </div>
-              <div className="three column row">
+              <div className="two column row">
                 <div className="column">
-                  <div className="ui input">
-                    <label
-                      htmlFor="file"
-                      className="positive ui labeled icon button"
-                    >
-                      <i className="image icon"></i>
-                      Lägg till bild
-                    </label>
-                    <input
-                      type="file"
-                      id="file"
-                      onChange={(e) => {
-                        handleImageChange(e);
-                        setFieldValue("file", e.currentTarget.files[0]);
+                  <div className="ui segment">
+                    <div
+                      className="ui input"
+                      style={{
+                        display: "flex",
+                        alignItems: "center",
+                        justifyContent: "center",
                       }}
-                      style={{ display: "none" }}
-                    />
+                    >
+                      <label htmlFor="file" className="ui labeled icon button">
+                        <i className="image icon"></i>
+                        Lägg till bild
+                      </label>
+                      <input
+                        type="file"
+                        id="file"
+                        onChange={(e) => {
+                          handleImageChange(e);
+                          setFieldValue("file", e.currentTarget.files[0]);
+                        }}
+                        style={{ display: "none" }}
+                      />
+                    </div>
+                    {previewImage ? (
+                      <div style={{ marginTop: "5%" }}>
+                        <img
+                          className="ui centered medium image"
+                          alt=""
+                          src={previewImage}
+                        />
+                      </div>
+                    ) : (
+                      <div className="ui icon message">
+                        <i className="image outline icon" />
+                        <div className="content">
+                          <div className="header">
+                            Lägg till en bild på receptet!
+                          </div>
+                          <p>Det går bara att ladda upp en bild.</p>
+                        </div>
+                      </div>
+                    )}
                   </div>
                   <div>
-                    <CustomErrorMessage name={"previewFile"} />
-                  </div>
-                  <div style={{ marginTop: "10%" }}>
-                    <img
-                      className="ui left medium image"
-                      alt=""
-                      src={previewImage}
-                    />
+                    <CustomErrorMessage name={"file"} />
                   </div>
                 </div>
-                <div className="column"></div>
                 <div className="column"></div>
               </div>
               <div className="one column row">

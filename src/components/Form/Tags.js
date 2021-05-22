@@ -1,4 +1,5 @@
 import React, { useEffect, useState, useCallback } from "react";
+import CustomPopup from "../Common/CustomPopup/CustomPopup.js";
 import { Field, FieldArray, ErrorMessage } from "formik";
 
 function NewTags(props) {
@@ -27,7 +28,13 @@ function NewTags(props) {
         {({ remove, push }) => (
           <div>
             <div className="required field" style={{ margin: "0px" }}>
-              <label htmlFor="values.tags">Kategori</label>
+              <label htmlFor="values.tags">
+                Kategori
+                <CustomPopup
+                  content="Om receptet t.ex. är en tårta, så kan man skriva 'Tårta' eller 'Pasta' om det är en pastarätt"
+                  position="top center"
+                />
+              </label>
             </div>
             {values.tags.length > 0 &&
               values.tags.map((tags, index) => (

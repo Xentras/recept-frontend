@@ -33,7 +33,7 @@ function Ingredients(props) {
       <label htmlFor="values.ingredients">Ingredienser</label>
       </div>
       <FieldArray name="ingredients">
-        {({ insert, remove, push }) => (
+        {({ remove, push }) => (
           <div>
             {values.ingredients.length > 0 &&
               values.ingredients.map((ingredients, index) => (
