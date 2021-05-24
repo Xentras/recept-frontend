@@ -30,7 +30,7 @@ function Ingredients(props) {
   return (
     <div className="ui segment">
       <div className="field">
-      <label htmlFor="values.ingredients">Ingredienser</label>
+        <label htmlFor="values.ingredients">Ingredienser</label>
       </div>
       <FieldArray name="ingredients">
         {({ remove, push }) => (
@@ -45,7 +45,7 @@ function Ingredients(props) {
                     <button
                       type="button"
                       disabled={!buttonsEnabledPerson}
-                      className="ui red icon button"
+                      className="ui labeled red icon button"
                       style={{ marginTop: 25 }}
                       onClick={() => {
                         remove(index);
@@ -53,7 +53,18 @@ function Ingredients(props) {
                       }}
                     >
                       <i className="trash icon" />
-                      Ta bort person/portion
+                      Ta bort portion
+                    </button>
+                    <button
+                      type="button"
+                      className="ui labeled icon button"
+                      style={{ marginTop: 25, marginLeft: 10 }}
+                      onClick={() => {
+                        push(values.ingredients[index])
+                      }}
+                    >
+                      <i className="copy outline icon" />
+                      Kopiera portion
                     </button>
                   </div>
                   <IngredientList
@@ -87,7 +98,7 @@ function Ingredients(props) {
                   }}
                 >
                   <i className="plus icon" />
-                  Lägg till person/portion
+                  Lägg till portion
                 </button>
               </div>
             </div>
