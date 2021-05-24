@@ -9,9 +9,9 @@ function Portion(props) {
   return (
     <div className="required field">
       <label htmlFor={`ingredients.${index}.size`}>
-        Antal personer/portioner
+        Antal portioner
         <CustomPopup
-          content="Ange hur många personer/portioner som ingredienserna ska räcka till."
+          content="Ange hur många portioner som ingredienserna ska räcka till."
           position="top center"
         />
       </label>
