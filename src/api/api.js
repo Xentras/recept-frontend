@@ -78,6 +78,12 @@ const patchRecipeNewImage = async (recipe, response) => {
   );
 };
 
+const checkGoogleLoggin = async () => {
+  return await axios.get(
+    "https://www.googleapis.com/oauth2/v3/tokeninfo?id_token=" + sessionStorage.getItem("token")
+  );
+}
+
 export {
   getThumbnail,
   getRecipe,
@@ -85,4 +91,5 @@ export {
   postRecipe,
   patchRecipeNoNewImage,
   patchRecipeNewImage,
+  checkGoogleLoggin
 };
