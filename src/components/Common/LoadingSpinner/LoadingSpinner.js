@@ -1,8 +1,9 @@
 import React from "react";
 
-function LoadingSpinner() {
+function LoadingSpinner(props) {
+  const className = "ui active " + props.size + " centered text inline loader";
   return (
-    <div className="ui active centered inline loader" />
+    <div className={className}>{props.text}</div>
   );
 }
 

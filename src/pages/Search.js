@@ -18,7 +18,7 @@ function Search() {
   return (
     <div className="ui container" style={{ marginTop: "10px" }}>
       <SearchBar searchRecipe={searchRecipe} />
-      {showLoadingSpinner ? <LoadingSpinner /> : <SearchResultList thumbnail={thumbnail} />}
+      {showLoadingSpinner ? <LoadingSpinner size={'medium'}/> : <SearchResultList thumbnail={thumbnail} />}
     </div>
   );
 }

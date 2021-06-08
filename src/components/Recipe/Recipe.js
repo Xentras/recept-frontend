@@ -13,6 +13,7 @@ function Recipe(props) {
   const [stateLoaded, setStateLoaded] = useState(false);
   const [reloadRecipe, setReloadRecipe] = useState(true);
   const [dropdownSizeOptions, setDropdownSizeOptions] = useState();
+  const [showUpdateButton, setShowUpdateButton] = useState(false);
   const recipeName = props.thumbnail.name;
 
   // This function is used when opening the modal
@@ -68,6 +69,10 @@ function Recipe(props) {
         setReloadRecipe(false)
       }
     };
+    const user = JSON.parse(sessionStorage.user);
+    if(recipe.googleId === user.googleId) {
+      setShowUpdateButton(true)
+    }
     loadRecipe();
   }, [recipeName, reloadRecipe]);
 
@@ -81,21 +86,38 @@ function Recipe(props) {
         >
           <i className="left chevron icon"></i>Tillbaka
         </button>
-        <button className="ui primary labeled icon button" onClick={() => openEditRecipeModal()}>
-          <i className="edit chevron icon"></i>Uppdatera receptet
-        </button>
+        {showUpdateButton && (
+          <button
+            className="ui primary labeled icon button"
+            onClick={() => openEditRecipeModal()}
+          >
+            <i className="edit chevron icon"></i>Uppdatera receptet
+          </button>
+        )}
       </div>
       <div className="ui grid">
-        {stateLoaded ?  <RecipeContent recipe={recipe} ingredientList={ingredientList} dropdownSizeOptions={dropdownSizeOptions} /> : <LoadingSpinner /> }
-        <ToastProvider components={{ ToastContainer: MyCustomToastContainer }} placement='top-center' autoDismiss>
-        {showModal && (
-          <EditRecipeModal
-            recipes={recipe}
-            modal={showModal}
-            onChange={closeEditRecipeModal}
-            onUpdate={handleUpdate}
+        {stateLoaded ? (
+          <RecipeContent
+            recipe={recipe}
+            ingredientList={ingredientList}
+            dropdownSizeOptions={dropdownSizeOptions}
           />
+        ) : (
+          <LoadingSpinner size={"medium"} />
         )}
+        <ToastProvider
+          components={{ ToastContainer: MyCustomToastContainer }}
+          placement="top-center"
+          autoDismiss
+        >
+          {showModal && (
+            <EditRecipeModal
+              recipes={recipe}
+              modal={showModal}
+              onChange={closeEditRecipeModal}
+              onUpdate={handleUpdate}
+            />
+          )}
         </ToastProvider>
       </div>
     </div>

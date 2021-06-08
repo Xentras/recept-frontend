@@ -1,12 +1,19 @@
-import React from "react";
+import React, {useContext} from "react";
 import { GoogleLogout } from "react-google-login";
+import { store } from "../../helper/Store/Store.js";
 
 const clientId =
   "1013207474380-hpaso5ne13qbq5pngmd562h3tbrot5ic.apps.googleusercontent.com";
 
 function Logut() {
+  const auth = useContext(store);
+  const { dispatch } = auth;
+
   const onSuccess = () => {
     sessionStorage.removeItem("token");
+    sessionStorage.removeItem("user");
+    sessionStorage.removeItem("givenName");
+    dispatch({ type: 'LOGOUT' })
   };
 
   const onFailure = (res) => {
