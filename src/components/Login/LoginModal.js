@@ -1,13 +1,13 @@
 import React from "react";
 import { Button, Modal } from "semantic-ui-react";
-import Login from "../Login/Login.js";
-import Logout from "../Logout/Logout.js";
+import Login from "./Login.js";
+import Logout from "./Logout.js";
 
 function LoginModal(props) {
   const open = props.modal;
 
   // This function will run when the user closes the modal
-  // it will tell "recipe.js" that it is closed
+  // it will tell "MenuNavBar.js" that it is closed
   const closeLoginModal = () => {
     props.onChange(false);
   };
@@ -26,7 +26,7 @@ function LoginModal(props) {
             <Login />
           </div>
           <div className="one column row">
-            <Logout onLogoutSuccess={() => closeLoginModal()}/>
+            <Logout />
           </div>
         </div>
       </Modal.Content>

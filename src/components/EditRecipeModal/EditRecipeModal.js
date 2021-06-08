@@ -86,8 +86,8 @@ function EditRecipeModal(props) {
 
   // This function is used when a user submits a update to a recipe and the image has also been updated
   const updateRecipeNewImage = async (base64EncodedImage, values) => {
-    const response = await postUploadImage(base64EncodedImage);
-    await patchRecipeNewImage(values, response)
+    const response = await postUploadImage(base64EncodedImage, sessionStorage.getItem("token"));
+    await patchRecipeNewImage(values, response, sessionStorage.getItem("token"))
       .then(() => {
         props.onUpdate(true);
         closeEditRecipeModal();
@@ -104,7 +104,7 @@ function EditRecipeModal(props) {
 
   // This function is used whena  user submits a update without changeing the image
   const updateRecipeNoNewImage = async (values) => {
-    await patchRecipeNoNewImage(values)
+    await patchRecipeNoNewImage(values, sessionStorage.getItem("token"))
       .then(() => {
         props.onUpdate(true);
         closeEditRecipeModal();

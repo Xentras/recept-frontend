@@ -18,18 +18,22 @@ const getRecipe = async (recipeName) => {
   );
 };
 
-const postUploadImage = async (base64EncodedImage) => {
+const postUploadImage = async (base64EncodedImage, token) => {
   return await axios(
     "https://" + process.env.REACT_APP_API_KEY + ".herokuapp.com/recipe/upload",
     {
       method: "POST",
       data: JSON.stringify({ data: base64EncodedImage }),
-      headers: { "Content-Type": "application/json" },
+      headers: {
+        "Content-Type": "application/json",
+        "Authorization": "Bearer " + token,
+      },
     }
   );
 };
 
-const postRecipe = async (recipe, response) => {
+const postRecipe = async (recipe, response, token, user) => {
+  const obj = JSON.parse(user);
   const recipeSend = {
     name: recipe.name,
     source: recipe.source,
@@ -38,11 +42,22 @@ const postRecipe = async (recipe, response) => {
     steps: recipe.steps,
     tags: recipe.tags,
     imageURL: response.data.secure_url,
+    googleId: obj.googleId,
   };
-  return await axios.post("https://" + process.env.REACT_APP_API_KEY + ".herokuapp.com/recipe/", recipeSend)
-}
+  return await axios(
+    "https://" + process.env.REACT_APP_API_KEY + ".herokuapp.com/recipe/",
+    {
+      method: "POST",
+      data: recipeSend,
+      headers: {
+        "Content-Type": "application/json",
+        "Authorization": "Bearer " + token,
+      },
+    }
+  );
+};
 
-const patchRecipeNoNewImage = async (recipe) => {
+const patchRecipeNoNewImage = async (recipe, token) => {
   const recipeId = recipe._id;
   const recipeSend = {
     name: recipe.name,
@@ -54,13 +69,23 @@ const patchRecipeNoNewImage = async (recipe) => {
     imageURL: recipe.imageURL,
   };
 
-  return await axios.patch(
-    "https://" + process.env.REACT_APP_API_KEY + ".herokuapp.com/recipe/" + recipeId,
-    recipeSend
+  return await axios(
+    "https://" +
+      process.env.REACT_APP_API_KEY +
+      ".herokuapp.com/recipe/" +
+      recipeId,
+    {
+      method: "PATCH",
+      data: recipeSend,
+      headers: {
+        "Content-Type": "application/json",
+        "Authorization": "Bearer " + token,
+      },
+    }
   );
 };
 
-const patchRecipeNewImage = async (recipe, response) => {
+const patchRecipeNewImage = async (recipe, response, token) => {
   const recipeId = recipe._id;
   const recipeSend = {
     name: recipe.name,
@@ -72,9 +97,19 @@ const patchRecipeNewImage = async (recipe, response) => {
     imageURL: response.data.secure_url,
   };
 
-  return await axios.patch(
-    "https://" + process.env.REACT_APP_API_KEY + ".herokuapp.com/recipe/" + recipeId,
-    recipeSend
+  return await axios(
+    "https://" +
+      process.env.REACT_APP_API_KEY +
+      ".herokuapp.com/recipe/" +
+      recipeId,
+    {
+      method: "PATCH",
+      data: recipeSend,
+      headers: {
+        "Content-Type": "application/json",
+        "Authorization": "Bearer " + token,
+      },
+    }
   );
 };
 

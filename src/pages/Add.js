@@ -81,8 +81,8 @@ function Add() {
 
   // This function is used when a user submits the recipe
   const postNewRecipe = async (base64EncodedImage, values) => {
-    const response = await postUploadImage(base64EncodedImage);
-    await postRecipe(values, response)
+    const response = await postUploadImage(base64EncodedImage, sessionStorage.getItem("token"));
+    await postRecipe(values, response, sessionStorage.getItem("token"), sessionStorage.getItem("user"))
       .then(() => {
         addToast("Receptet har Sparats!", { appearance: "success" });
       })
