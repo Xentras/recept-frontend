@@ -69,9 +69,11 @@ function Recipe(props) {
         setReloadRecipe(false)
       }
     };
-    const user = JSON.parse(sessionStorage.user);
-    if(recipe.googleId === user.googleId) {
-      setShowUpdateButton(true)
+    if (sessionStorage.getItem("user")) {
+      const user = JSON.parse(sessionStorage.user);
+      if (recipe.googleId === user.googleId) {
+        setShowUpdateButton(true);
+      }
     }
     loadRecipe();
   }, [recipeName, reloadRecipe]);
