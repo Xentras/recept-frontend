@@ -1,6 +1,5 @@
 import React, { useState, useEffect, useCallback } from "react";
 import { FieldArray } from "formik";
-import { Popup, Icon } from "semantic-ui-react";
 import Portion from "./Portion.js";
 import IngredientList from "./IngredientList.js";
 
@@ -39,7 +38,7 @@ function Ingredients(props) {
               values.ingredients.map((ingredients, index) => (
                 <div className="ui grid" key={index} style={{ marginTop: 5 }}>
                   <div className="four wide column">
-                    <Portion index={index} />
+                    <Portion index={index} handleBlur={props.handleBlur} values={values.ingredients[index].size} setFieldValue={props.setFieldValue} />
                   </div>
                   <div className="twelve wide column">
                     <button
@@ -68,9 +67,11 @@ function Ingredients(props) {
                     </button>
                   </div>
                   <IngredientList
+                    handleBlur={props.handleBlur}
                     index={index}
                     ingredients={ingredients}
                     values={values}
+                    setFieldValue={props.setFieldValue}
                   />
                 </div>
               ))}

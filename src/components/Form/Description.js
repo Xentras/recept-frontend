@@ -1,8 +1,8 @@
 import React from "react";
 import CustomPopup from "../Common/CustomPopup/CustomPopup.js";
-import { Field } from "formik";
+import CustomField from "../Common/CustomField/CustomField.js"
 
-function NewDescription() {
+function Description(props) {
   return (
     <div className="field">
       <label htmlFor="values.description">
@@ -12,9 +12,17 @@ function NewDescription() {
           position="top center"
         />
       </label>
-      <Field name={`description`} placeholder="Beskrivning" as="textarea" />
+      <CustomField
+        handleBlur={props.handleBlur}
+        values={props.values}
+        name={`description`}
+        placeholder="Beskrivning"
+        as="textarea"
+        setFieldValue={props.setFieldValue}
+        allowSpecialChars={true}
+      />
     </div>
   );
 }
 
-export default NewDescription;
+export default Description;

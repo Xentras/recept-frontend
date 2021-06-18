@@ -18,8 +18,8 @@ const getRecipe = async (recipeName) => {
   );
 };
 
-const postUploadImage = async (base64EncodedImage, token) => {
-  return await axios(
+const postRecipe = async (recipe, token, user, base64EncodedImage) => {
+  const response = await axios(
     "https://" + process.env.REACT_APP_API_KEY + ".herokuapp.com/recipe/upload",
     {
       method: "POST",
@@ -30,9 +30,6 @@ const postUploadImage = async (base64EncodedImage, token) => {
       },
     }
   );
-};
-
-const postRecipe = async (recipe, response, token, user) => {
   const obj = JSON.parse(user);
   const recipeSend = {
     name: recipe.name,
@@ -67,6 +64,7 @@ const patchRecipeNoNewImage = async (recipe, token) => {
     steps: recipe.steps,
     tags: recipe.tags,
     imageURL: recipe.imageURL,
+    googleId: recipe.googleId,
   };
 
   return await axios(
@@ -80,12 +78,17 @@ const patchRecipeNoNewImage = async (recipe, token) => {
       headers: {
         "Content-Type": "application/json",
         "Authorization": "Bearer " + token,
+        "Access": sessionStorage.getItem("accessToken"),
       },
     }
   );
 };
 
-const patchRecipeNewImage = async (recipe, response, token) => {
+const patchRecipeNewImage = async (recipe, base64EncodedImage, token) => {
+  let url = recipe.imageURL;
+  let imageId = url.substr(url.lastIndexOf("/") + 1);
+  imageId = imageId.substr(0, imageId.lastIndexOf("."));
+
   const recipeId = recipe._id;
   const recipeSend = {
     name: recipe.name,
@@ -94,13 +97,17 @@ const patchRecipeNewImage = async (recipe, response, token) => {
     ingredients: recipe.ingredients,
     steps: recipe.steps,
     tags: recipe.tags,
-    imageURL: response.data.secure_url,
+    imageURL: recipe.imageURL,
+    googleId: recipe.googleId,
+    imageId: imageId,
+    data: base64EncodedImage,
   };
 
+  console.log(recipeSend);
   return await axios(
-    "https://" +
+    "http://" +
       process.env.REACT_APP_API_KEY +
-      ".herokuapp.com/recipe/" +
+      ".herokuapp.com/recipe/image/" +
       recipeId,
     {
       method: "PATCH",
@@ -108,6 +115,7 @@ const patchRecipeNewImage = async (recipe, response, token) => {
       headers: {
         "Content-Type": "application/json",
         "Authorization": "Bearer " + token,
+        "Access": sessionStorage.getItem("accessToken"),
       },
     }
   );
@@ -122,7 +130,6 @@ const checkGoogleLoggin = async () => {
 export {
   getThumbnail,
   getRecipe,
-  postUploadImage,
   postRecipe,
   patchRecipeNoNewImage,
   patchRecipeNewImage,

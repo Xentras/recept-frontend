@@ -1,7 +1,7 @@
 import React, { useEffect, useState } from "react";
 import { ToastProvider, DefaultToastContainer } from 'react-toast-notifications';
 import EditRecipeModal from "../EditRecipeModal/EditRecipeModal.js";
-import LoadingSpinner from "../Common/LoadingSpinner/LoadingSpinner.js"
+import {LoadingSpinner} from "../Common/LoadingSpinner/LoadingSpinner.js"
 import RecipeContent from "./RecipeContent.js"
 import { getRecipe } from "../../api/api.js";
 import _ from "lodash";
@@ -14,7 +14,12 @@ function Recipe(props) {
   const [reloadRecipe, setReloadRecipe] = useState(true);
   const [dropdownSizeOptions, setDropdownSizeOptions] = useState();
   const [showUpdateButton, setShowUpdateButton] = useState(false);
-  const recipeName = props.thumbnail.name;
+  const recipeName = props.thumbnail?._id || props.thumbnail;
+  
+  let id = window.location.href || undefined;
+  if(id) {
+    id = id.substring(id.lastIndexOf("/") + 1);
+  }
 
   // This function is used when opening the modal
   const openEditRecipeModal = () => {
@@ -33,8 +38,9 @@ function Recipe(props) {
   };
 
   // This function is used when the user clicks on the back button
+  // If they come from "add.js" the back button will send the user to search page
   function backButtonClick() {
-    props.onBackButtonClick(true);
+      props.history.push("/")
   }
 
   // This function will make sure that the toast message is always visible
@@ -47,7 +53,13 @@ function Recipe(props) {
   useEffect(() => {
     const loadRecipe = async () => {
       if (reloadRecipe === true) {
-        const response = await getRecipe(recipeName);
+        let response = "";
+        if(id) {
+          response = await getRecipe(id);
+        } else {
+          response = await getRecipe(recipeName);
+        }
+        
         setRecipe(response.data[0]);
         // This will create a list with different size/portion options used in the dropdown
         setDropdownSizeOptions(
@@ -79,7 +91,7 @@ function Recipe(props) {
   }, [recipeName, reloadRecipe]);
 
   return (
-    <div>
+    <div className="ui container">
       <div>
         <button
           style={{ margin: 15, marginLeft: 0 }}

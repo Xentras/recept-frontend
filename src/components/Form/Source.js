@@ -1,8 +1,8 @@
 import React from "react";
 import CustomPopup from "../Common/CustomPopup/CustomPopup.js";
-import { Field } from "formik";
+import CustomField from "../Common/CustomField/CustomField.js";
 
-function NewSource() {
+function Source(props) {
   return (
     <div className="field">
       <label htmlFor="values.source">
@@ -12,9 +12,17 @@ function NewSource() {
           position="bottom center"
         />
       </label>
-      <Field name={`source`} placeholder="Källa" type="text" />
+      <CustomField
+        handleBlur={props.handleBlur}
+        values={props.values}
+        name={`source`}
+        placeholder="Källa"
+        type="text"
+        setFieldValue={props.setFieldValue}
+        allowSpecialChars={true}
+      />
     </div>
   );
 }
 
-export default NewSource;
+export default Source;
