@@ -1,6 +1,8 @@
 import React, { useEffect, useState, useCallback } from "react";
 import CustomPopup from "../Common/CustomPopup/CustomPopup.js";
-import { Field, FieldArray, ErrorMessage } from "formik";
+import CustomField from "../Common/CustomField/CustomField.js";
+import CustomErrorMessage from "../Common/CustomErrorMessage/CustomErrorMessage.js";
+import { FieldArray } from "formik";
 
 function NewTags(props) {
   const [buttonsEnabled, setButtonsEnabled] = useState(false);
@@ -44,10 +46,14 @@ function NewTags(props) {
                     key={index}
                     style={{ paddingTop: 5, paddingBottom: 5 }}
                   >
-                    <Field
+                    <CustomField
+                      handleBlur={props.handleBlur}
+                      values={values.tags[index]}
                       name={`tags[${index}]`}
                       placeholder="Kategori"
                       type="text"
+                      setFieldValue={props.setFieldValue}
+                      allowSpecialChars={true}
                     />
                     <button
                       type="button"
@@ -62,9 +68,7 @@ function NewTags(props) {
                     </button>
                   </div>
                   <div>
-                    <span style={{ color: "red" }}>
-                      <ErrorMessage name={`tags[${index}]`} />
-                    </span>
+                    <CustomErrorMessage name={`tags[${index}]`} />
                   </div>
                 </div>
               ))}

@@ -1,8 +1,8 @@
 import React, { useState, useEffect, useCallback } from "react";
 import { FieldArray } from "formik";
-import Input from "../../Common/Input/Input.js";
 import Dropdown from "../../Common/Dropdown/Dropdown.js";
 import CustomErrorMessage from "../../Common/CustomErrorMessage/CustomErrorMessage.js";
+import CustomField from "../../Common/CustomField/CustomField.js";
 import CustomPopup from "../../Common/CustomPopup/CustomPopup.js";
 
 function IngredientList(props) {
@@ -71,10 +71,13 @@ function IngredientList(props) {
                       Mängd
                     </label>
                   </div>
-                  <Input
+                  <CustomField
+                    handleBlur={props.handleBlur}
+                    values={ingredients.ingredient[index2].amount}
                     name={`ingredients[${index}].ingredient[${index2}].amount`}
                     type="text"
                     placeholder="Mängd"
+                    setFieldValue={props.setFieldValue}
                   />
                   <CustomErrorMessage
                     name={`ingredients[${index}].ingredient[${index2}].amount`}
@@ -98,10 +101,13 @@ function IngredientList(props) {
                       Ingrediens
                     </label>
                   </div>
-                  <Input
+                  <CustomField
+                    handleBlur={props.handleBlur}
+                    values={ingredients.ingredient[index2].name}
                     name={`ingredients[${index}].ingredient[${index2}].name`}
                     type="text"
                     placeholder="Ingrediens"
+                    setFieldValue={props.setFieldValue}
                   />
                   <CustomErrorMessage
                     name={`ingredients[${index}].ingredient[${index2}].name`}
@@ -119,10 +125,16 @@ function IngredientList(props) {
                       />
                     </label>
                   </div>
-                  <Input
+                  <CustomField
+                    handleBlur={props.handleBlur}
+                    values={ingredients.ingredient[index2].subcategory}
                     name={`ingredients[${index}].ingredient[${index2}].subcategory`}
                     type="text"
                     placeholder="Kategori"
+                    setFieldValue={props.setFieldValue}
+                  />
+                  <CustomErrorMessage
+                    name={`ingredients[${index}].ingredient[${index2}].subcategory`}
                   />
                 </div>
                 <div className="two wide column">

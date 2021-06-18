@@ -1,14 +1,22 @@
 import React from "react";
-import { Field, ErrorMessage } from "formik";
+import CustomField from "../Common/CustomField/CustomField.js"
+import {ErrorMessage} from "formik";
 
-function NewName() { 
+function Name(props) {
     return (
       <div className="required field">
         <label htmlFor="values.name">Namn</label>
-        <Field name={`name`} placeholder="Namn" type="text" />
+        <CustomField
+          handleBlur={props.handleBlur}
+          values={props.values}
+          name={`name`}
+          placeholder="Namn"
+          type="text"
+          setFieldValue={props.setFieldValue}
+        />
         <span style={{ color: 'red' }}><ErrorMessage name="name" /></span>
       </div>
     );
 }
 
-export default NewName;
+export default Name;
