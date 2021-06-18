@@ -103,7 +103,6 @@ const patchRecipeNewImage = async (recipe, base64EncodedImage, token) => {
     data: base64EncodedImage,
   };
 
-  console.log(recipeSend);
   return await axios(
     "http://" +
       process.env.REACT_APP_API_KEY +
