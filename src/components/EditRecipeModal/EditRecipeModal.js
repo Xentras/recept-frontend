@@ -8,10 +8,7 @@ import Ingredients from "../Form/Ingredients/Ingredients";
 import Steps from "../Form/Steps";
 import Tags from "../Form/Tags";
 import Source from "../Form/Source";
-import {
-  patchRecipeNoNewImage,
-  patchRecipeNewImage,
-} from "../../api/api.js";
+import { patchRecipeNoNewImage, patchRecipeNewImage } from "../../api/api.js";
 import * as Yup from "yup";
 
 function EditRecipeModal(props) {
@@ -22,7 +19,7 @@ function EditRecipeModal(props) {
   const { addToast } = useToasts();
   const open = props.modal;
   const savedState = props.recipes;
-  const formRef = useRef()
+  const formRef = useRef();
 
   // This function will run when the user closes the modal
   // it will tell "recipe.js" that it is closed
@@ -31,35 +28,64 @@ function EditRecipeModal(props) {
   };
 
   const submitFromOutsideForm = () => {
-    submitButtonRef.current.click()
+    submitButtonRef.current.click();
     if (formRef.current) {
-      if(!formRef.current.isValid) {
+      if (!formRef.current.isValid) {
         addToast("Något obligatoriskt fält saknar text!", {
           appearance: "warning",
         });
-      } 
+      }
     }
-  }
+  };
 
   const DisplayingErrorMessagesSchema = Yup.object().shape({
-    name: Yup.string().required("Obligatoriskt fält"),
+    name: Yup.string()
+      .required("Obligatoriskt fält")
+      .matches(
+        /^[^!#¤%/()=?¡@£$€¥{[±½§¶}\]<>^$]+$/,
+        "Innehåller otillåtna tecken"
+      )
+      .min(2, "Måste vara minst 2 tecken långt")
+      .max(40, "Får inte innehålla fler än 40 tecken"),
+    source: Yup.string().max(200, "Får inte innehålla fler än 200 tecken"),
+    description: Yup.string().max(500, "Får inte innehålla fler än 500 tecken"),
     ingredients: Yup.array().of(
       Yup.object().shape({
-        size: Yup.string().required("Obligatoriskt fält"),
+        size: Yup.string()
+          .required("Obligatoriskt fält")
+          .matches(/^[0-9]+$/, "Får bara innehålla siffror")
+          .max(4, "Får inte innehålla fler än 4 tecken"),
         ingredient: Yup.array().of(
           Yup.object().shape({
-            amount: Yup.string().required("Obligatoriskt fält"),
-            name: Yup.string().required("Obligatoriskt fält"),
+            amount: Yup.string()
+              .required("Obligatoriskt fält")
+              .matches(/^[0-9,.½/]+$/, "Får bara innehålla siffror")
+              .max(4, "Får inte innehålla fler än 4 tecken"),
+            name: Yup.string()
+              .required("Obligatoriskt fält")
+              .max(30, "Får inte innehålla fler än 30 tecken"),
+            subcategory: Yup.string().max(
+              30,
+              "Får inte innehålla fler än 30 tecken"
+            ),
           })
         ),
       })
     ),
     steps: Yup.array()
-      .of(Yup.string().required("Obligatoriskt fält"))
+      .of(
+        Yup.string()
+          .required("Obligatoriskt fält")
+          .max(200, "Får inte innehålla fler än 200 tecken")
+      )
       .strict()
       .required(),
     tags: Yup.array()
-      .of(Yup.string().required("Obligatoriskt fält"))
+      .of(
+        Yup.string()
+          .required("Obligatoriskt fält")
+          .max(20, "Får inte innehålla fler än 20 tecken")
+      )
       .strict()
       .required(),
   });
@@ -91,15 +117,19 @@ function EditRecipeModal(props) {
 
   // This function is used when a user submits a update to a recipe and the image has also been updated
   const updateRecipeNewImage = async (base64EncodedImage, values) => {
-    setIsSubmitting(true)
-    await patchRecipeNewImage(values, base64EncodedImage, sessionStorage.getItem("token"))
+    setIsSubmitting(true);
+    await patchRecipeNewImage(
+      values,
+      base64EncodedImage,
+      sessionStorage.getItem("token")
+    )
       .then(() => {
         props.onUpdate(true);
         closeEditRecipeModal();
         addToast("Receptet har uppdaterats!", { appearance: "success" });
       })
       .catch((error) => {
-        setIsSubmitting(false)
+        setIsSubmitting(false);
         addToast(
           "Det gick inte att uppdatera receptet, följande fel uppstod: " +
             error.message,
@@ -110,7 +140,7 @@ function EditRecipeModal(props) {
 
   // This function is used whena  user submits a update without changeing the image
   const updateRecipeNoNewImage = async (values) => {
-    setIsSubmitting(true)
+    setIsSubmitting(true);
     await patchRecipeNoNewImage(values, sessionStorage.getItem("token"))
       .then(() => {
         props.onUpdate(true);
@@ -118,7 +148,7 @@ function EditRecipeModal(props) {
         addToast("Receptet har uppdaterats!", { appearance: "success" });
       })
       .catch((error) => {
-        setIsSubmitting(false)
+        setIsSubmitting(false);
         addToast(
           "Det gick inte att uppdatera receptet, följande fel uppstod: " +
             error.message,
@@ -146,50 +176,34 @@ function EditRecipeModal(props) {
           }}
           innerRef={formRef}
         >
-          {({ values, setFieldValue, handleBlur }) => (
+          {({ values }) => (
             <Form className="ui container">
               <div className="ui form">
                 <div className="ui grid">
                   <div className="two column row">
                     <div className="column">
-                      <Name
-                        handleBlur={handleBlur}
-                        values={values.name}
-                        setFieldValue={setFieldValue}
-                      />
+                      <Name />
                     </div>
                     <div className="column">
-                      <Source
-                        handleBlur={handleBlur}
-                        values={values.source}
-                        setFieldValue={setFieldValue}
-                      />
+                      <Source />
                     </div>
                   </div>
                   <div className="one column row">
                     <div className="column">
-                      <Description
-                        handleBlur={handleBlur}
-                        values={values.description}
-                        setFieldValue={setFieldValue}
-                      />
+                      <Description />
                     </div>
                   </div>
                   <div className="one column row">
                     <div className="column">
-                      <Ingredients
-                        handleBlur={handleBlur}
-                        values={values}
-                        setFieldValue={setFieldValue}
-                      />
+                      <Ingredients values={values} />
                     </div>
                   </div>
                   <div className="three column row">
                     <div className="eight wide column">
-                      <Steps handleBlur={handleBlur} values={values} setFieldValue={setFieldValue} />
+                      <Steps values={values} />
                     </div>
                     <div className="column">
-                      <Tags handleBlur={handleBlur} values={values} setFieldValue={setFieldValue} />
+                      <Tags values={values} />
                     </div>
                   </div>
                   <div className="three column row">
@@ -223,15 +237,15 @@ function EditRecipeModal(props) {
                     <div className="column"></div>
                   </div>
                   <div className="one column row">
-                  <button
-                    className="ui labeled icon primary button"
-                    type="submit"
-                    disabled={isSubmitting}
-                    ref={submitButtonRef}
-                  >
-                    <i className="save icon"></i>
-                    Uppdatera recept
-                  </button>
+                    <button
+                      className="ui labeled icon primary button"
+                      type="submit"
+                      disabled={isSubmitting}
+                      ref={submitButtonRef}
+                    >
+                      <i className="save icon"></i>
+                      Uppdatera recept
+                    </button>
                   </div>
                 </div>
               </div>
