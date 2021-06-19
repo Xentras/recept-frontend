@@ -1,8 +1,6 @@
 import React, { useEffect, useState, useCallback } from "react";
 import CustomPopup from "../Common/CustomPopup/CustomPopup.js";
-import CustomField from "../Common/CustomField/CustomField.js";
-import CustomErrorMessage from "../Common/CustomErrorMessage/CustomErrorMessage.js";
-import { FieldArray } from "formik";
+import { Field, FieldArray, ErrorMessage } from "formik";
 
 function NewSteps(props) {
   const [buttonsEnabled, setButtonsEnabled] = useState(false);
@@ -46,14 +44,10 @@ function NewSteps(props) {
                     key={index}
                     style={{ paddingTop: 5, paddingBottom: 5 }}
                   >
-                    <CustomField
-                      handleBlur={props.handleBlur}
-                      values={values.steps[index]}
+                    <Field
                       name={`steps[${index}]`}
                       placeholder="Steg"
                       type="text"
-                      setFieldValue={props.setFieldValue}
-                      allowSpecialChars={true}
                     />
                     <button
                       type="button"
@@ -68,7 +62,9 @@ function NewSteps(props) {
                     </button>
                   </div>
                   <div>
-                    <CustomErrorMessage name={`steps[${index}]`}/>
+                    <span style={{ color: "red" }}>
+                      <ErrorMessage name={`steps[${index}]`} />
+                    </span>
                   </div>
                 </div>
               ))}
