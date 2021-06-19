@@ -1,6 +1,7 @@
 import React from "react";
 import CustomPopup from "../Common/CustomPopup/CustomPopup.js";
-import CustomField from "../Common/CustomField/CustomField.js"
+import CustomErrorMessage from "../Common/CustomErrorMessage/CustomErrorMessage.js";
+import { Field } from "formik";
 
 function Description(props) {
   return (
@@ -12,15 +13,10 @@ function Description(props) {
           position="top center"
         />
       </label>
-      <CustomField
-        handleBlur={props.handleBlur}
-        values={props.values}
-        name={`description`}
-        placeholder="Beskrivning"
-        as="textarea"
-        setFieldValue={props.setFieldValue}
-        allowSpecialChars={true}
-      />
+      <Field name={`description`} placeholder="Beskrivning" as="textarea" />
+      <div>
+        <CustomErrorMessage name={`description`} />
+      </div>
     </div>
   );
 }

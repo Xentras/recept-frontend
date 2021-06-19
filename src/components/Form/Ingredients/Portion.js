@@ -2,6 +2,7 @@ import React from "react";
 import CustomField from "../../Common/CustomField/CustomField.js";
 import CustomErrorMessage from "../../Common/CustomErrorMessage/CustomErrorMessage.js";
 import CustomPopup from "../../Common/CustomPopup/CustomPopup.js";
+import Input from "../../Common/Input/Input.js";
 
 function Portion(props) {
   const index = props.index;
@@ -15,10 +16,7 @@ function Portion(props) {
           position="top center"
         />
       </label>
-      <CustomField
-        handleBlur={props.handleBlur}
-        values={props.values}
-        setFieldValue={props.setFieldValue}
+      <Input
         name={`ingredients.${index}.size`}
         type="text"
         placeholder="Portioner"

@@ -4,6 +4,7 @@ import Dropdown from "../../Common/Dropdown/Dropdown.js";
 import CustomErrorMessage from "../../Common/CustomErrorMessage/CustomErrorMessage.js";
 import CustomField from "../../Common/CustomField/CustomField.js";
 import CustomPopup from "../../Common/CustomPopup/CustomPopup.js";
+import Input from "../../Common/Input/Input.js";
 
 function IngredientList(props) {
   const [buttonsEnabledIngredient, setButtonsEnabledIngredient] = useState([
@@ -71,13 +72,10 @@ function IngredientList(props) {
                       Mängd
                     </label>
                   </div>
-                  <CustomField
-                    handleBlur={props.handleBlur}
-                    values={ingredients.ingredient[index2].amount}
+                  <Input
                     name={`ingredients[${index}].ingredient[${index2}].amount`}
                     type="text"
                     placeholder="Mängd"
-                    setFieldValue={props.setFieldValue}
                   />
                   <CustomErrorMessage
                     name={`ingredients[${index}].ingredient[${index2}].amount`}
@@ -101,13 +99,10 @@ function IngredientList(props) {
                       Ingrediens
                     </label>
                   </div>
-                  <CustomField
-                    handleBlur={props.handleBlur}
-                    values={ingredients.ingredient[index2].name}
+                  <Input
                     name={`ingredients[${index}].ingredient[${index2}].name`}
                     type="text"
                     placeholder="Ingrediens"
-                    setFieldValue={props.setFieldValue}
                   />
                   <CustomErrorMessage
                     name={`ingredients[${index}].ingredient[${index2}].name`}
@@ -125,13 +120,10 @@ function IngredientList(props) {
                       />
                     </label>
                   </div>
-                  <CustomField
-                    handleBlur={props.handleBlur}
-                    values={ingredients.ingredient[index2].subcategory}
+                  <Input
                     name={`ingredients[${index}].ingredient[${index2}].subcategory`}
                     type="text"
                     placeholder="Kategori"
-                    setFieldValue={props.setFieldValue}
                   />
                   <CustomErrorMessage
                     name={`ingredients[${index}].ingredient[${index2}].subcategory`}
