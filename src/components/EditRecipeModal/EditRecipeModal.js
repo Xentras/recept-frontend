@@ -9,14 +9,13 @@ import Steps from "../Form/Steps";
 import Tags from "../Form/Tags";
 import Source from "../Form/Source";
 import {
+  postUploadImage,
   patchRecipeNoNewImage,
   patchRecipeNewImage,
 } from "../../api/api.js";
 import * as Yup from "yup";
 
 function EditRecipeModal(props) {
-  const submitButtonRef = useRef(null);
-  const [isSubmitting, setIsSubmitting] = useState(false);
   const [image, setImage] = useState();
   const [previewImage, setPreviewImage] = useState();
   const { addToast } = useToasts();
@@ -31,16 +30,12 @@ function EditRecipeModal(props) {
   };
 
   const submitFromOutsideForm = () => {
-    submitButtonRef.current.click()
     if (formRef.current) {
-      if(!formRef.current.isValid) {
-        addToast("Något obligatoriskt fält saknar text!", {
-          appearance: "warning",
-        });
-      } 
+      if(formRef.current.isValid) {
+        formRef.current.handleSubmit()
+      }
     }
   }
-
   const DisplayingErrorMessagesSchema = Yup.object().shape({
     name: Yup.string().required("Obligatoriskt fält"),
     ingredients: Yup.array().of(
@@ -91,15 +86,14 @@ function EditRecipeModal(props) {
 
   // This function is used when a user submits a update to a recipe and the image has also been updated
   const updateRecipeNewImage = async (base64EncodedImage, values) => {
-    setIsSubmitting(true)
-    await patchRecipeNewImage(values, base64EncodedImage, sessionStorage.getItem("token"))
+    const response = await postUploadImage(base64EncodedImage, sessionStorage.getItem("token"));
+    await patchRecipeNewImage(values, response, sessionStorage.getItem("token"))
       .then(() => {
         props.onUpdate(true);
         closeEditRecipeModal();
         addToast("Receptet har uppdaterats!", { appearance: "success" });
       })
       .catch((error) => {
-        setIsSubmitting(false)
         addToast(
           "Det gick inte att uppdatera receptet, följande fel uppstod: " +
             error.message,
@@ -110,7 +104,6 @@ function EditRecipeModal(props) {
 
   // This function is used whena  user submits a update without changeing the image
   const updateRecipeNoNewImage = async (values) => {
-    setIsSubmitting(true)
     await patchRecipeNoNewImage(values, sessionStorage.getItem("token"))
       .then(() => {
         props.onUpdate(true);
@@ -118,7 +111,6 @@ function EditRecipeModal(props) {
         addToast("Receptet har uppdaterats!", { appearance: "success" });
       })
       .catch((error) => {
-        setIsSubmitting(false)
         addToast(
           "Det gick inte att uppdatera receptet, följande fel uppstod: " +
             error.message,
@@ -139,57 +131,41 @@ function EditRecipeModal(props) {
           enableReinitialize={true}
           initialValues={savedState}
           validationSchema={DisplayingErrorMessagesSchema}
-          validateOnBlur={true}
+          validateOnBlur={false}
           validateOnMount={true}
           onSubmit={async (values) => {
             handleSubmit(values);
           }}
           innerRef={formRef}
         >
-          {({ values, setFieldValue, handleBlur }) => (
+          {({ values }) => (
             <Form className="ui container">
               <div className="ui form">
                 <div className="ui grid">
                   <div className="two column row">
                     <div className="column">
-                      <Name
-                        handleBlur={handleBlur}
-                        values={values.name}
-                        setFieldValue={setFieldValue}
-                      />
+                      <Name />
                     </div>
                     <div className="column">
-                      <Source
-                        handleBlur={handleBlur}
-                        values={values.source}
-                        setFieldValue={setFieldValue}
-                      />
+                      <Source />
                     </div>
                   </div>
                   <div className="one column row">
                     <div className="column">
-                      <Description
-                        handleBlur={handleBlur}
-                        values={values.description}
-                        setFieldValue={setFieldValue}
-                      />
+                      <Description />
                     </div>
                   </div>
                   <div className="one column row">
                     <div className="column">
-                      <Ingredients
-                        handleBlur={handleBlur}
-                        values={values}
-                        setFieldValue={setFieldValue}
-                      />
+                      <Ingredients values={values} />
                     </div>
                   </div>
                   <div className="three column row">
                     <div className="eight wide column">
-                      <Steps handleBlur={handleBlur} values={values} setFieldValue={setFieldValue} />
+                      <Steps values={values} />
                     </div>
                     <div className="column">
-                      <Tags handleBlur={handleBlur} values={values} setFieldValue={setFieldValue} />
+                      <Tags values={values} />
                     </div>
                   </div>
                   <div className="three column row">
@@ -223,15 +199,6 @@ function EditRecipeModal(props) {
                     <div className="column"></div>
                   </div>
                   <div className="one column row">
-                  <button
-                    className="ui labeled icon primary button"
-                    type="submit"
-                    disabled={isSubmitting}
-                    ref={submitButtonRef}
-                  >
-                    <i className="save icon"></i>
-                    Uppdatera recept
-                  </button>
                   </div>
                 </div>
               </div>
@@ -245,7 +212,6 @@ function EditRecipeModal(props) {
           content="Uppdatera recept"
           labelPosition="right"
           icon="save"
-          disabled={isSubmitting}
           onClick={() => submitFromOutsideForm()}
           primary
         />

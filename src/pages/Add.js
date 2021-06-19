@@ -1,8 +1,8 @@
-import React, { useEffect, useState, useContext } from "react";
+import React, { useState } from "react";
 import { useToasts } from "react-toast-notifications";
 import { Formik, Form } from "formik";
 import { BrowserView, MobileView } from "react-device-detect";
-import { postRecipe } from "../api/api.js";
+import { postUploadImage, postRecipe } from "../api/api.js";
 import Tags from "../components/Form/Tags.js";
 import Steps from "../components/Form/Steps.js";
 import Name from "../components/Form/Name.js";
@@ -10,18 +10,12 @@ import Description from "../components/Form/Description.js";
 import Source from "../components/Form/Source.js";
 import Ingredient from "../components/Form/Ingredients/Ingredients.js";
 import CustomErrorMessage from "../components/Common/CustomErrorMessage/CustomErrorMessage.js";
-import Recipe from "../components/Recipe/Recipe.js"
 import * as Yup from "yup";
-import {SearchContext} from "../Context/SearchContext.js"
 
-function Add(props) {
-  const [isSubmitting, setIsSubmitting] = useState(false)
+function Add() {
   const [image, setImage] = useState();
   const [previewImage, setPreviewImage] = useState();
-  const [redirect, setRedirect] = useState(false)
-  const [response, setResponse] = useState();
   const { addToast } = useToasts();
-  const state = useContext(SearchContext)
 
   const initialRecipeState = {
     name: "",
@@ -87,11 +81,9 @@ function Add(props) {
 
   // This function is used when a user submits the recipe
   const postNewRecipe = async (base64EncodedImage, values) => {
-    setIsSubmitting(true)
-    await postRecipe(values, sessionStorage.getItem("token"), sessionStorage.getItem("user"), base64EncodedImage)
-      .then((res) => {
-        setResponse(res.data)
-        setRedirect(true)
+    const response = await postUploadImage(base64EncodedImage, sessionStorage.getItem("token"));
+    await postRecipe(values, response, sessionStorage.getItem("token"), sessionStorage.getItem("user"))
+      .then(() => {
         addToast("Receptet har Sparats!", { appearance: "success" });
       })
       .catch((error) => {
@@ -101,20 +93,7 @@ function Add(props) {
           { appearance: "error" }
         );
       });
-    setIsSubmitting(false)
   };
-
-  useEffect(() => {
-    state.setSearch("", false)
-  }, [])
-
-  if (redirect) {
-    return (
-      <div className="ui container">
-        <Recipe thumbnail={response._id} redirected={true} history={props.history} />
-      </div>
-    );
-  }
 
   return (
     <Formik
@@ -125,52 +104,34 @@ function Add(props) {
         handleSubmit(values);
       }}
     >
-      {({ values, setFieldValue, handleBlur }) => (
+      {({ values, setFieldValue }) => (
         <Form className="ui container">
           <div className="ui form">
             <div className="ui grid">
               <div className="two column row">
                 <div className="column">
-                  <Name handleBlur={handleBlur} setFieldValue={setFieldValue} />
+                  <Name />
                 </div>
                 <div className="column">
-                  <Source
-                    handleBlur={handleBlur}
-                    setFieldValue={setFieldValue}
-                  />
+                  <Source />
                 </div>
               </div>
               <div className="one column row">
                 <div className="column">
-                  <Description
-                    handleBlur={handleBlur}
-                    setFieldValue={setFieldValue}
-                  />
+                  <Description />
                 </div>
               </div>
               <div className="one column row">
                 <div className="column">
-                  <Ingredient
-                    handleBlur={handleBlur}
-                    values={values}
-                    setFieldValue={setFieldValue}
-                  />
+                  <Ingredient values={values} />
                 </div>
               </div>
               <div className="three column row">
                 <div className="eight wide column">
-                  <Steps
-                    handleBlur={handleBlur}
-                    values={values}
-                    setFieldValue={setFieldValue}
-                  />
+                  <Steps values={values} />
                 </div>
                 <div className="column">
-                  <Tags
-                    handleBlur={handleBlur}
-                    values={values}
-                    setFieldValue={setFieldValue}
-                  />
+                  <Tags values={values} />
                 </div>
               </div>
               <div className="two column row">
@@ -226,25 +187,13 @@ function Add(props) {
               </div>
               <div className="one column row">
                 <div className="column">
-                  {isSubmitting ? (
-                    <button
-                      className="ui labeled loading icon primary button"
-                      type="submit"
-                      disabled={isSubmitting}
-                    >
-                      <i className="save icon"></i>
-                      Spara recept!
-                    </button>
-                  ) : (
-                    <button
-                      className="ui labeled icon primary button"
-                      type="submit"
-                      disabled={isSubmitting}
-                    >
-                      <i className="save icon"></i>
-                      Spara recept!
-                    </button>
-                  )}
+                  <button
+                    className="ui labeled icon primary button"
+                    type="submit"
+                  >
+                    <i className="save icon"></i>
+                    Spara recept!
+                  </button>
                 </div>
               </div>
             </div>
