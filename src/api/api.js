@@ -1,5 +1,4 @@
 import axios from "axios";
-import trimData from "../helper/FormatData/FormatData.js";
 
 // This is the request that returns all the recipes with a thumbnail
 // This is used when a user searches for a recipe
@@ -20,7 +19,6 @@ const getRecipe = async (recipeName) => {
 };
 
 const postRecipe = async (recipe, token, user, base64EncodedImage) => {
-  const formatedData = trimData(recipe);
   const response = await axios(
     "https://" + process.env.REACT_APP_API_KEY + ".herokuapp.com/recipe/upload",
     {
@@ -34,12 +32,12 @@ const postRecipe = async (recipe, token, user, base64EncodedImage) => {
   );
   const obj = JSON.parse(user);
   const recipeSend = {
-    name: formatedData.name,
-    source: formatedData.source,
-    description: formatedData.description,
-    ingredients: formatedData.ingredients,
-    steps: formatedData.steps,
-    tags: formatedData.tags,
+    name: recipe.name,
+    source: recipe.source,
+    description: recipe.description,
+    ingredients: recipe.ingredients,
+    steps: recipe.steps,
+    tags: recipe.tags,
     imageURL: response.data.secure_url,
     googleId: obj.googleId,
   };
@@ -57,17 +55,16 @@ const postRecipe = async (recipe, token, user, base64EncodedImage) => {
 };
 
 const patchRecipeNoNewImage = async (recipe, token) => {
-  const formatedData = trimData(recipe);
   const recipeId = recipe._id;
   const recipeSend = {
-    name: formatedData.name,
-    source: formatedData.source,
-    description: formatedData.description,
-    ingredients: formatedData.ingredients,
-    steps: formatedData.steps,
-    tags: formatedData.tags,
-    imageURL: formatedData.imageURL,
-    googleId: formatedData.googleId,
+    name: recipe.name,
+    source: recipe.source,
+    description: recipe.description,
+    ingredients: recipe.ingredients,
+    steps: recipe.steps,
+    tags: recipe.tags,
+    imageURL: recipe.imageURL,
+    googleId: recipe.googleId,
   };
 
   return await axios(
@@ -88,21 +85,20 @@ const patchRecipeNoNewImage = async (recipe, token) => {
 };
 
 const patchRecipeNewImage = async (recipe, base64EncodedImage, token) => {
-  const formatedData = trimData(recipe);
   let url = recipe.imageURL;
   let imageId = url.substr(url.lastIndexOf("/") + 1);
   imageId = imageId.substr(0, imageId.lastIndexOf("."));
 
   const recipeId = recipe._id;
   const recipeSend = {
-    name: formatedData.name,
-    source: formatedData.source,
-    description: formatedData.description,
-    ingredients: formatedData.ingredients,
-    steps: formatedData.steps,
-    tags: formatedData.tags,
-    imageURL: formatedData.imageURL,
-    googleId: formatedData.googleId,
+    name: recipe.name,
+    source: recipe.source,
+    description: recipe.description,
+    ingredients: recipe.ingredients,
+    steps: recipe.steps,
+    tags: recipe.tags,
+    imageURL: recipe.imageURL,
+    googleId: recipe.googleId,
     imageId: imageId,
     data: base64EncodedImage,
   };

@@ -21,7 +21,7 @@ function SearchResultList(props) {
           </div>
         </BrowserView>
         <MobileView>
-          <div key={i} className="ui cards">
+          <div key={i} className="ui centered cards">
             <Link className="card" to={"/recept/" + props.thumbnail[i]._id}>
               <div className="image">
                 <img alt="" src={imageURL} className="ui medium image" />

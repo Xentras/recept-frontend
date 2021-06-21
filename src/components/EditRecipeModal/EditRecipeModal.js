@@ -9,7 +9,10 @@ import Steps from "../Form/Steps";
 import Tags from "../Form/Tags";
 import Source from "../Form/Source";
 import { patchRecipeNoNewImage, patchRecipeNewImage } from "../../api/api.js";
-import * as Yup from "yup";
+import * as Yup from "yup"
+import CheckImage from "../../helper/CheckImage/CheckImage.js"
+import trimData from "../../helper/FormatData/FormatData.js"
+import CheckValue from "../../helper/CheckValue/CheckValue.js"
 
 function EditRecipeModal(props) {
   const submitButtonRef = useRef(null);
@@ -92,8 +95,17 @@ function EditRecipeModal(props) {
 
   // This function will run if the user changes the image for the recipe
   const handleImageChange = (e) => {
-    setImage(e.target.files[0]);
-    setPreviewImage(URL.createObjectURL(e.target.files[0]));
+    const imageCheck = CheckImage(e);
+
+    if (imageCheck.length > 0) {
+      addToast("Följande fel uppstod: " + imageCheck.join(", "), {
+        appearance: "error",
+      });
+    } else {
+      setImage(e.target.files[0]);
+      setPreviewImage(URL.createObjectURL(e.target.files[0]));
+      setFieldValue("file", e.currentTarget.files[0]);
+    }
   };
 
   // This function is used when the user updates the recipe
@@ -117,44 +129,66 @@ function EditRecipeModal(props) {
 
   // This function is used when a user submits a update to a recipe and the image has also been updated
   const updateRecipeNewImage = async (base64EncodedImage, values) => {
-    setIsSubmitting(true);
-    await patchRecipeNewImage(
-      values,
-      base64EncodedImage,
-      sessionStorage.getItem("token")
-    )
-      .then(() => {
-        props.onUpdate(true);
-        closeEditRecipeModal();
-        addToast("Receptet har uppdaterats!", { appearance: "success" });
-      })
-      .catch((error) => {
-        setIsSubmitting(false);
-        addToast(
-          "Det gick inte att uppdatera receptet, följande fel uppstod: " +
-            error.message,
-          { appearance: "error" }
-        );
-      });
+    const formatedData = trimData(values);
+    const errorList = CheckValue(formatedData);
+
+    if (errorList.length > 0) {
+      addToast(
+        "Det gick inte att spara receptet, något av följande fält innehåller bara mellanslag " +
+          errorList.join(", "),
+        { appearance: "error" }
+      );
+    } else {
+      setIsSubmitting(true);
+      await patchRecipeNewImage(
+        formatedData,
+        base64EncodedImage,
+        sessionStorage.getItem("token")
+      )
+        .then(() => {
+          props.onUpdate(true);
+          closeEditRecipeModal();
+          addToast("Receptet har uppdaterats!", { appearance: "success" });
+        })
+        .catch((error) => {
+          setIsSubmitting(false);
+          addToast(
+            "Det gick inte att uppdatera receptet, följande fel uppstod: " +
+              error.message,
+            { appearance: "error" }
+          );
+        });
+    }
   };
 
   // This function is used whena  user submits a update without changeing the image
   const updateRecipeNoNewImage = async (values) => {
-    setIsSubmitting(true);
-    await patchRecipeNoNewImage(values, sessionStorage.getItem("token"))
-      .then(() => {
-        props.onUpdate(true);
-        closeEditRecipeModal();
-        addToast("Receptet har uppdaterats!", { appearance: "success" });
-      })
-      .catch((error) => {
-        setIsSubmitting(false);
-        addToast(
-          "Det gick inte att uppdatera receptet, följande fel uppstod: " +
-            error.message,
-          { appearance: "error" }
-        );
-      });
+    const formatedData = trimData(values);
+    const errorList = CheckValue(formatedData);
+
+    if (errorList.length > 0) {
+      addToast(
+        "Det gick inte att spara receptet, något av följande fält innehåller bara mellanslag " +
+          errorList.join(", "),
+        { appearance: "error" }
+      );
+    } else {
+      setIsSubmitting(true);
+      await patchRecipeNoNewImage(formatedData, sessionStorage.getItem("token"))
+        .then(() => {
+          props.onUpdate(true);
+          closeEditRecipeModal();
+          addToast("Receptet har uppdaterats!", { appearance: "success" });
+        })
+        .catch((error) => {
+          setIsSubmitting(false);
+          addToast(
+            "Det gick inte att uppdatera receptet, följande fel uppstod: " +
+              error.message,
+            { appearance: "error" }
+          );
+        });
+    }
   };
 
   return (
@@ -214,7 +248,7 @@ function EditRecipeModal(props) {
                           className="positive ui labeled icon button"
                         >
                           <i className="image icon"></i>
-                          Lägg till bild
+                          Ändra bild
                         </label>
                         <input
                           type="file"
@@ -237,15 +271,17 @@ function EditRecipeModal(props) {
                     <div className="column"></div>
                   </div>
                   <div className="one column row">
-                    <button
-                      className="ui labeled icon primary button"
-                      type="submit"
-                      disabled={isSubmitting}
-                      ref={submitButtonRef}
-                    >
-                      <i className="save icon"></i>
-                      Uppdatera recept
-                    </button>
+                    <div className="column">
+                      <button
+                        className="ui labeled icon primary button"
+                        type="submit"
+                        disabled={isSubmitting}
+                        ref={submitButtonRef}
+                      >
+                        <i className="save icon"></i>
+                        Uppdatera recept
+                      </button>
+                    </div>
                   </div>
                 </div>
               </div>

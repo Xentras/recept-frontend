@@ -63,7 +63,7 @@ function IngredientList(props) {
         <div className="ui grid" style={{ marginTop: 5 }}>
           {ingredients.ingredient.length > 0 &&
             ingredients.ingredient.map((ingredient, index2) => (
-              <div className="ui grid" key={index2}>
+              <div className="ui grid" key={index2} style={{ marginTop: "0px" }}>
                 <div className="two wide column">
                   <div className="required field" style={{ margin: "0px" }}>
                     <label
