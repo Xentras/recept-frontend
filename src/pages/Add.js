@@ -2,6 +2,7 @@ import React, { useEffect, useState, useContext } from "react";
 import { useToasts } from "react-toast-notifications";
 import { Formik, Form } from "formik";
 import { BrowserView, MobileView } from "react-device-detect";
+import { Message } from "semantic-ui-react";
 import { postRecipe } from "../api/api.js";
 import Tags from "../components/Form/Tags.js";
 import Steps from "../components/Form/Steps.js";
@@ -12,6 +13,9 @@ import Ingredient from "../components/Form/Ingredients/Ingredients.js";
 import CustomErrorMessage from "../components/Common/CustomErrorMessage/CustomErrorMessage.js";
 import * as Yup from "yup";
 import { SearchContext } from "../Context/SearchContext.js";
+import trimData from "../helper/FormatData/FormatData.js";
+import CheckValue from "../helper/CheckValue/CheckValue.js";
+import CheckImage from "../helper/CheckImage/CheckImage.js";
 
 function Add(props) {
   const [isSubmitting, setIsSubmitting] = useState(false);
@@ -92,9 +96,18 @@ function Add(props) {
   });
 
   // This function will run if the user adds an image to the recipe
-  const handleImageChange = (e) => {
-    setImage(e.target.files[0]);
-    setPreviewImage(URL.createObjectURL(e.target.files[0]));
+  const handleImageChange = (e, setFieldValue) => {
+    const imageCheck = CheckImage(e);
+
+    if (imageCheck.length > 0) {
+      addToast("Följande fel uppstod: " + imageCheck.join(", "), {
+        appearance: "error",
+      });
+    } else {
+      setImage(e.target.files[0]);
+      setPreviewImage(URL.createObjectURL(e.target.files[0]));
+      setFieldValue("file", e.currentTarget.files[0]);
+    }
   };
 
   // This function is used when the user submits the recipe
@@ -115,25 +128,36 @@ function Add(props) {
 
   // This function is used when a user submits the recipe
   const postNewRecipe = async (base64EncodedImage, values) => {
-    setIsSubmitting(true);
-    await postRecipe(
-      values,
-      sessionStorage.getItem("token"),
-      sessionStorage.getItem("user"),
-      base64EncodedImage
-    )
-      .then((res) => {
-        setResponse(res.data);
-        setRedirect(true);
-      })
-      .catch((error) => {
-        addToast(
-          "Det gick inte att spara receptet, följande fel uppstod: " +
-            error.message,
-          { appearance: "error" }
-        );
-      });
-    setIsSubmitting(false);
+    const formatedData = trimData(values);
+    const errorList = CheckValue(formatedData);
+
+    if (errorList.length > 0) {
+      addToast(
+        "Det gick inte att spara receptet, något av följande fält innehåller bara mellanslag " +
+          errorList.join(", "),
+        { appearance: "error" }
+      );
+    } else {
+      setIsSubmitting(true);
+      await postRecipe(
+        formatedData,
+        sessionStorage.getItem("token"),
+        sessionStorage.getItem("user"),
+        base64EncodedImage
+      )
+        .then((res) => {
+          setResponse(res.data);
+          setRedirect(true);
+        })
+        .catch((error) => {
+          addToast(
+            "Det gick inte att spara receptet, följande fel uppstod: " +
+              error.message,
+            { appearance: "error" }
+          );
+        });
+      setIsSubmitting(false);
+    }
   };
 
   useEffect(() => {
@@ -156,112 +180,244 @@ function Add(props) {
       }}
     >
       {({ values, setFieldValue }) => (
-        <Form className="ui container">
-          <div className="ui form">
-            <div className="ui grid">
-              <div className="two column row">
-                <div className="column">
-                  <Name />
+        <Form className="ui container" style={{ marginTop: "15px" }}>
+          <BrowserView>
+            <div className="ui form">
+              <div className="ui grid">
+                <div className="two column row">
+                  <div className="column">
+                    <Name />
+                  </div>
+                  <div className="column">
+                    <Source />
+                  </div>
                 </div>
-                <div className="column">
-                  <Source />
+                <div className="one column row">
+                  <div className="column">
+                    <Description />
+                  </div>
                 </div>
-              </div>
-              <div className="one column row">
-                <div className="column">
-                  <Description />
+                <div className="one column row">
+                  <div className="column">
+                    <Ingredient values={values} />
+                  </div>
                 </div>
-              </div>
-              <div className="one column row">
-                <div className="column">
-                  <Ingredient values={values} />
+                <div className="three column row">
+                  <div className="eight wide column">
+                    <Steps values={values} />
+                  </div>
+                  <div className="column">
+                    <Tags values={values} />
+                  </div>
                 </div>
-              </div>
-              <div className="three column row">
-                <div className="eight wide column">
-                  <Steps values={values} />
-                </div>
-                <div className="column">
-                  <Tags values={values} />
-                </div>
-              </div>
-              <div className="two column row">
-                <div className="column">
-                  <div className="ui segment">
-                    <div
-                      className="ui input"
-                      style={{
-                        display: "flex",
-                        alignItems: "center",
-                        justifyContent: "center",
-                      }}
-                    >
-                      <label htmlFor="file" className="ui labeled icon button">
-                        <i className="image icon"></i>
-                        Lägg till bild
-                      </label>
-                      <input
-                        type="file"
-                        id="file"
-                        onChange={(e) => {
-                          handleImageChange(e);
-                          setFieldValue("file", e.currentTarget.files[0]);
+                <div className="two column row">
+                  <div className="column">
+                    <div className="ui segment">
+                      <div
+                        className="ui input"
+                        style={{
+                          display: "flex",
+                          alignItems: "center",
+                          justifyContent: "center",
                         }}
-                        style={{ display: "none" }}
-                      />
-                    </div>
-                    {previewImage ? (
-                      <div style={{ marginTop: "5%" }}>
-                        <img
-                          className="ui centered medium image"
-                          alt=""
-                          src={previewImage}
+                      >
+                        <label
+                          htmlFor="file"
+                          className="ui labeled icon button"
+                        >
+                          <i className="image icon"></i>
+                          Lägg till bild
+                        </label>
+                        <input
+                          type="file"
+                          id="file"
+                          accept="image/png, image/jpeg"
+                          onChange={(e) => {
+                            handleImageChange(e, setFieldValue);
+                          }}
+                          style={{ display: "none" }}
                         />
                       </div>
-                    ) : (
-                      <div className="ui icon message">
-                        <i className="image outline icon" />
-                        <div className="content">
-                          <div className="header">
-                            Lägg till en bild på receptet!
-                          </div>
-                          <p>Det går bara att ladda upp en bild.</p>
+                      {previewImage ? (
+                        <div style={{ marginTop: "5%" }}>
+                          <img
+                            className="ui centered medium image"
+                            alt=""
+                            src={previewImage}
+                          />
                         </div>
-                      </div>
+                      ) : (
+                        <div className="ui icon message">
+                          <i className="image outline icon" />
+                          <div className="content">
+                            <div className="header">
+                              Lägg till en bild på receptet!
+                            </div>
+                            <p>Det går bara att ladda upp en bild.</p>
+                          </div>
+                        </div>
+                      )}
+                    </div>
+                    <div>
+                      <CustomErrorMessage name={"file"} />
+                    </div>
+                  </div>
+                  <div className="column"></div>
+                </div>
+                <div className="one column row">
+                  <div className="column">
+                    {isSubmitting ? (
+                      <button
+                        className="ui labeled loading icon primary button"
+                        type="submit"
+                        disabled={isSubmitting}
+                      >
+                        <i className="save icon"></i>
+                        Spara recept!
+                      </button>
+                    ) : (
+                      <button
+                        className="ui labeled icon primary button"
+                        type="submit"
+                        disabled={isSubmitting}
+                      >
+                        <i className="save icon"></i>
+                        Spara recept!
+                      </button>
                     )}
                   </div>
-                  <div>
-                    <CustomErrorMessage name={"file"} />
+                </div>
+              </div>
+              <div style={{ height: 100 }}></div>
+            </div>
+          </BrowserView>
+          <MobileView>
+            <div className="ui form">
+              <div className="ui grid">
+                <div className="one column row">
+                  <div className="column">
+                    <div className="ui yellow icon message">
+                      <i className="info icon" />
+                      <div className="content">
+                        <div className="header">
+                          Det är lättare att lägga till recept från datorn!
+                        </div>
+                        <p>På mobil kan det vara svårare att lägga till ett recept jämfört med dator.</p>
+                      </div>
+                    </div>
                   </div>
                 </div>
-                <div className="column"></div>
-              </div>
-              <div className="one column row">
-                <div className="column">
-                  {isSubmitting ? (
-                    <button
-                      className="ui labeled loading icon primary button"
-                      type="submit"
-                      disabled={isSubmitting}
-                    >
-                      <i className="save icon"></i>
-                      Spara recept!
-                    </button>
-                  ) : (
-                    <button
-                      className="ui labeled icon primary button"
-                      type="submit"
-                      disabled={isSubmitting}
-                    >
-                      <i className="save icon"></i>
-                      Spara recept!
-                    </button>
-                  )}
+                <div className="one column row">
+                  <div className="column">
+                    <Name />
+                  </div>
+                </div>
+                <div className="one column row">
+                  <div className="column">
+                    <Source />
+                  </div>
+                </div>
+                <div className="one column row">
+                  <div className="column">
+                    <Description />
+                  </div>
+                </div>
+                <div className="one column row">
+                  <div className="column">
+                    <Ingredient values={values} />
+                  </div>
+                </div>
+                <div className="one column row">
+                  <div className="column">
+                    <Steps values={values} />
+                  </div>
+                </div>
+                <div className="one column row">
+                  <div className="column">
+                    <Tags values={values} />
+                  </div>
+                </div>
+                <div className="one column row">
+                  <div className="column">
+                    <div className="ui segment">
+                      <div
+                        className="ui input"
+                        style={{
+                          display: "flex",
+                          alignItems: "center",
+                          justifyContent: "center",
+                        }}
+                      >
+                        <label
+                          htmlFor="file"
+                          className="ui labeled icon button"
+                        >
+                          <i className="image icon"></i>
+                          Lägg till bild
+                        </label>
+                        <input
+                          type="file"
+                          id="file"
+                          accept="image/png, image/jpeg"
+                          onChange={(e) => {
+                            handleImageChange(e, setFieldValue);
+                          }}
+                          style={{ display: "none" }}
+                        />
+                      </div>
+                      {previewImage ? (
+                        <div style={{ marginTop: "5%" }}>
+                          <img
+                            className="ui centered medium image"
+                            alt=""
+                            src={previewImage}
+                          />
+                        </div>
+                      ) : (
+                        <div className="ui icon message">
+                          <i className="image outline icon" />
+                          <div className="content">
+                            <div className="header">
+                              Lägg till en bild på receptet!
+                            </div>
+                            <p>Det går bara att ladda upp en bild.</p>
+                          </div>
+                        </div>
+                      )}
+                    </div>
+                    <div>
+                      <CustomErrorMessage name={"file"} />
+                    </div>
+                  </div>
+                  <div className="column"></div>
+                </div>
+                <div className="one column row">
+                  <div className="column">
+                    {isSubmitting ? (
+                      <button
+                        className="ui labeled loading icon primary button"
+                        type="submit"
+                        disabled={isSubmitting}
+                      >
+                        <i className="save icon"></i>
+                        Spara recept!
+                      </button>
+                    ) : (
+                      <button
+                        className="ui labeled icon primary button"
+                        type="submit"
+                        disabled={isSubmitting}
+                      >
+                        <i className="save icon"></i>
+                        Spara recept!
+                      </button>
+                    )}
+                  </div>
                 </div>
               </div>
+              <div style={{ height: 100 }}></div>
             </div>
-            <div style={{ height: 100 }}></div>
-          </div>
+          </MobileView>
         </Form>
       )}
     </Formik>
