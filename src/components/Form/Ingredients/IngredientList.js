@@ -2,9 +2,9 @@ import React, { useState, useEffect, useCallback } from "react";
 import { FieldArray } from "formik";
 import Dropdown from "../../Common/Dropdown/Dropdown.js";
 import CustomErrorMessage from "../../Common/CustomErrorMessage/CustomErrorMessage.js";
-import CustomField from "../../Common/CustomField/CustomField.js";
 import CustomPopup from "../../Common/CustomPopup/CustomPopup.js";
 import Input from "../../Common/Input/Input.js";
+import { isBrowser, MobileView, BrowserView } from "react-device-detect";
 
 function IngredientList(props) {
   const [buttonsEnabledIngredient, setButtonsEnabledIngredient] = useState([
@@ -63,89 +63,181 @@ function IngredientList(props) {
         <div className="ui grid" style={{ marginTop: 5 }}>
           {ingredients.ingredient.length > 0 &&
             ingredients.ingredient.map((ingredient, index2) => (
-              <div className="ui grid" key={index2} style={{ marginTop: "0px" }}>
-                <div className="two wide column">
-                  <div className="required field" style={{ margin: "0px" }}>
-                    <label
-                      htmlFor={`ingredients[${index}].ingredient[${index2}].amount`}
-                    >
-                      Mängd
-                    </label>
+              <div key={index2}>
+                <BrowserView
+                  className="ui grid"
+                  key={"browser-" + index2}
+                  style={{ marginTop: "0px" }}
+                >
+                  <div className="two wide column">
+                    <div className="required field" style={{ margin: "0px" }}>
+                      <label
+                        htmlFor={`ingredients[${index}].ingredient[${index2}].amount`}
+                      >
+                        Mängd
+                      </label>
+                    </div>
+                    <Input
+                      name={`ingredients[${index}].ingredient[${index2}].amount`}
+                      type="text"
+                      placeholder="Mängd"
+                    />
+                    <CustomErrorMessage
+                      name={`ingredients[${index}].ingredient[${index2}].amount`}
+                    />
                   </div>
-                  <Input
-                    name={`ingredients[${index}].ingredient[${index2}].amount`}
-                    type="text"
-                    placeholder="Mängd"
-                  />
-                  <CustomErrorMessage
-                    name={`ingredients[${index}].ingredient[${index2}].amount`}
-                  />
-                </div>
-                <div className="two wide column">
-                  <div className="field" style={{ margin: "0px" }}>
-                    <label
-                      htmlFor={`ingredients[${index}].ingredient[${index2}].unit`}
-                    >
-                      Enhet
-                    </label>
+                  <div className="two wide column">
+                    <div className="field" style={{ margin: "0px" }}>
+                      <label
+                        htmlFor={`ingredients[${index}].ingredient[${index2}].unit`}
+                      >
+                        Enhet
+                      </label>
+                    </div>
+                    <Dropdown index={index} index2={index2} />
                   </div>
-                  <Dropdown index={index} index2={index2} />
-                </div>
-                <div className="four wide column">
-                  <div className="required field" style={{ margin: "0px" }}>
-                    <label
-                      htmlFor={`ingredients[${index}].ingredient[${index2}].name`}
-                    >
-                      Ingrediens
-                    </label>
+                  <div className="four wide column">
+                    <div className="required field" style={{ margin: "0px" }}>
+                      <label
+                        htmlFor={`ingredients[${index}].ingredient[${index2}].name`}
+                      >
+                        Ingrediens
+                      </label>
+                    </div>
+                    <Input
+                      name={`ingredients[${index}].ingredient[${index2}].name`}
+                      type="text"
+                      placeholder="Ingrediens"
+                    />
+                    <CustomErrorMessage
+                      name={`ingredients[${index}].ingredient[${index2}].name`}
+                    />
                   </div>
-                  <Input
-                    name={`ingredients[${index}].ingredient[${index2}].name`}
-                    type="text"
-                    placeholder="Ingrediens"
-                  />
-                  <CustomErrorMessage
-                    name={`ingredients[${index}].ingredient[${index2}].name`}
-                  />
-                </div>
-                <div className="four wide column">
-                  <div className="field" style={{ margin: "0px" }}>
-                    <label
-                      htmlFor={`ingredients[${index}].ingredient[${index2}].subcategory`}
-                    >
-                      Kategori
-                      <CustomPopup
-                        content="Här kan man t.ex. skriva 'Deg' om samma ingrediensen kommer användas till andra saker."
-                        position="top center"
-                      />
-                    </label>
+                  <div className="four wide column">
+                    <div className="field" style={{ margin: "0px" }}>
+                      <label
+                        htmlFor={`ingredients[${index}].ingredient[${index2}].subcategory`}
+                      >
+                        Kategori
+                        <CustomPopup
+                          content="Här kan man t.ex. skriva 'Deg' om samma ingrediensen kommer användas till andra saker."
+                          position="top center"
+                        />
+                      </label>
+                    </div>
+                    <Input
+                      name={`ingredients[${index}].ingredient[${index2}].subcategory`}
+                      type="text"
+                      placeholder="Kategori"
+                    />
+                    <CustomErrorMessage
+                      name={`ingredients[${index}].ingredient[${index2}].subcategory`}
+                    />
                   </div>
-                  <Input
-                    name={`ingredients[${index}].ingredient[${index2}].subcategory`}
-                    type="text"
-                    placeholder="Kategori"
-                  />
-                  <CustomErrorMessage
-                    name={`ingredients[${index}].ingredient[${index2}].subcategory`}
-                  />
-                </div>
-                <div className="two wide column">
-                  <button
-                    type="button"
-                    style={{ marginTop: 25 }}
-                    disabled={!buttonsEnabledIngredient[index]}
-                    className="ui red icon button"
-                    onClick={() => {
-                      remove(index2);
-                      onIngredientClick();
-                    }}
-                  >
-                    <i className="trash icon"></i>
-                  </button>
-                </div>
+                  <div className="two wide column">
+                    <button
+                      type="button"
+                      style={{ marginTop: 25 }}
+                      disabled={!buttonsEnabledIngredient[index]}
+                      className="ui red icon button"
+                      onClick={() => {
+                        remove(index2);
+                        onIngredientClick();
+                      }}
+                    >
+                      <i className="trash icon"></i>
+                    </button>
+                  </div>
+                </BrowserView>
+                <MobileView
+                  className="ui grid"
+                  key={"mobile-" + index2}
+                  style={{ marginTop: "0px" }}
+                >
+                  <div className="five wide column">
+                    <div className="required field" style={{ margin: "0px" }}>
+                      <label
+                        htmlFor={`ingredients[${index}].ingredient[${index2}].amount`}
+                      >
+                        Mängd
+                      </label>
+                    </div>
+                    <Input
+                      name={`ingredients[${index}].ingredient[${index2}].amount`}
+                      type="text"
+                      placeholder="Mängd"
+                    />
+                    <CustomErrorMessage
+                      name={`ingredients[${index}].ingredient[${index2}].amount`}
+                    />
+                  </div>
+                  <div className="five wide column">
+                    <div className="field" style={{ margin: "0px" }}>
+                      <label
+                        htmlFor={`ingredients[${index}].ingredient[${index2}].unit`}
+                      >
+                        Enhet
+                      </label>
+                    </div>
+                    <Dropdown index={index} index2={index2} />
+                  </div>
+                  <div className="three wide column">
+                    <button
+                      type="button"
+                      disabled={!buttonsEnabledIngredient[index]}
+                      className="ui red icon button"
+                      style={{ marginTop: "24px"}}
+                      onClick={() => {
+                        remove(index2);
+                        onIngredientClick();
+                      }}
+                    >
+                      <i className="trash icon"></i>
+                    </button>
+                  </div>
+                  <div className="seven wide column">
+                    <div className="required field" style={{ margin: "0px" }}>
+                      <label
+                        htmlFor={`ingredients[${index}].ingredient[${index2}].name`}
+                      >
+                        Ingrediens
+                      </label>
+                    </div>
+                    <Input
+                      name={`ingredients[${index}].ingredient[${index2}].name`}
+                      type="text"
+                      placeholder="Ingrediens"
+                    />
+                    <CustomErrorMessage
+                      name={`ingredients[${index}].ingredient[${index2}].name`}
+                    />
+                  </div>
+                  <div className="seven wide column">
+                    <div className="field" style={{ margin: "0px" }}>
+                      <label
+                        htmlFor={`ingredients[${index}].ingredient[${index2}].subcategory`}
+                      >
+                        Kategori
+                        <CustomPopup
+                          content="Här kan man t.ex. skriva 'Deg' om samma ingrediensen kommer användas till andra saker."
+                          position="top center"
+                        />
+                      </label>
+                    </div>
+                    <Input
+                      name={`ingredients[${index}].ingredient[${index2}].subcategory`}
+                      type="text"
+                      placeholder="Kategori"
+                    />
+                    <CustomErrorMessage
+                      name={`ingredients[${index}].ingredient[${index2}].subcategory`}
+                    />
+                  </div>       
+                </MobileView>
+                <div className={isBrowser ? "" : "ui divider"} />
               </div>
             ))}
-          <div className="one column row" style={{ marginTop: 5 }}>
+          <div className="one column row">
             <div className="five wide column">
               <button
                 type="button"

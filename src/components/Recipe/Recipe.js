@@ -4,6 +4,7 @@ import EditRecipeModal from "../EditRecipeModal/EditRecipeModal.js";
 import {LoadingSpinner} from "../Common/LoadingSpinner/LoadingSpinner.js"
 import RecipeContent from "./RecipeContent.js"
 import { getRecipe } from "../../api/api.js";
+import { isBrowser } from "react-device-detect";
 import _ from "lodash";
 
 function Recipe(props) {
@@ -105,7 +106,7 @@ function Recipe(props) {
             className="ui primary labeled icon button"
             onClick={() => openEditRecipeModal()}
           >
-            <i className="edit chevron icon"></i>Uppdatera receptet
+            <i className="edit chevron icon"></i>{isBrowser ? "Uppdatera receptet" : "Uppdatera"}
           </button>
         )}
       </div>

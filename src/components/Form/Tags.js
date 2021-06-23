@@ -1,8 +1,8 @@
 import React, { useEffect, useState, useCallback } from "react";
 import CustomPopup from "../Common/CustomPopup/CustomPopup.js";
-import CustomField from "../Common/CustomField/CustomField.js";
 import CustomErrorMessage from "../Common/CustomErrorMessage/CustomErrorMessage.js";
 import { Field, FieldArray } from "formik";
+import { isBrowser } from "react-device-detect";
 
 function NewTags(props) {
   const [buttonsEnabled, setButtonsEnabled] = useState(false);
@@ -34,7 +34,7 @@ function NewTags(props) {
                 Kategori
                 <CustomPopup
                   content="Om receptet t.ex. är en tårta, så kan man skriva 'Tårta' eller 'Pasta' om det är en pastarätt"
-                  position="top center"
+                  position={isBrowser ? "top center" : "top right"}
                 />
               </label>
             </div>

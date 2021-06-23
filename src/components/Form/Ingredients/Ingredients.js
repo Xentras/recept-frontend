@@ -1,5 +1,6 @@
 import React, { useState, useEffect, useCallback } from "react";
 import { FieldArray } from "formik";
+import { isBrowser, MobileView, BrowserView } from "react-device-detect";
 import Portion from "./Portion.js";
 import IngredientList from "./IngredientList.js";
 
@@ -37,15 +38,52 @@ function Ingredients(props) {
             {values.ingredients.length > 0 &&
               values.ingredients.map((ingredients, index) => (
                 <div className="ui grid" key={index} style={{ marginTop: 5 }}>
-                  <div className="four wide column">
+                  <div
+                    className={
+                      isBrowser ? "four wide column" : "twelve wide column"
+                    }
+                  >
                     <Portion index={index} />
                   </div>
-                  <div className="twelve wide column">
+                  <BrowserView>
+                    <div className="twelve wide column">
+                      <button
+                        type="button"
+                        disabled={!buttonsEnabledPerson}
+                        className="ui labeled red icon button"
+                        style={{ marginTop: 25 }}
+                        onClick={() => {
+                          remove(index);
+                          onPersonClick();
+                        }}
+                      >
+                        <i className="trash icon" />
+                        Ta bort portion
+                      </button>
+                      <button
+                        type="button"
+                        className="ui labeled icon button"
+                        style={{ marginTop: 25, marginLeft: 10 }}
+                        onClick={() => {
+                          push(values.ingredients[index]);
+                        }}
+                      >
+                        <i className="copy outline icon" />
+                        Kopiera portion
+                      </button>
+                    </div>
+                    <IngredientList
+                      index={index}
+                      ingredients={ingredients}
+                      values={values}
+                    />
+                  </BrowserView>
+                  <MobileView>
                     <button
                       type="button"
                       disabled={!buttonsEnabledPerson}
                       className="ui labeled red icon button"
-                      style={{ marginTop: 25 }}
+                      style={{ width: "45%", marginRight: "5px" }}
                       onClick={() => {
                         remove(index);
                         onPersonClick();
@@ -57,24 +95,24 @@ function Ingredients(props) {
                     <button
                       type="button"
                       className="ui labeled icon button"
-                      style={{ marginTop: 25, marginLeft: 10 }}
+                      style={{ width: "45%" }}
                       onClick={() => {
-                        push(values.ingredients[index])
+                        push(values.ingredients[index]);
                       }}
                     >
                       <i className="copy outline icon" />
                       Kopiera portion
                     </button>
-                  </div>
-                  <IngredientList
-                    index={index}
-                    ingredients={ingredients}
-                    values={values}
-                  />
+                    <IngredientList
+                      index={index}
+                      ingredients={ingredients}
+                      values={values}
+                    />
+                  </MobileView>
                 </div>
               ))}
             <div className="one column row">
-              <div className="three wide column" style={{ marginTop: 5 }}>
+              <div className="three wide column" style={{ marginTop: 10 }}>
                 <button
                   type="button"
                   className="primary ui labeled icon button"

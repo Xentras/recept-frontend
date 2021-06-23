@@ -2,6 +2,7 @@ import React from "react";
 import CustomPopup from "../Common/CustomPopup/CustomPopup.js";
 import CustomErrorMessage from "../Common/CustomErrorMessage/CustomErrorMessage.js";
 import { Field } from "formik";
+import { isBrowser } from "react-device-detect";
 
 function Source(props) {
   return (
@@ -10,7 +11,7 @@ function Source(props) {
         Källa
         <CustomPopup
           content="Länk till sidan där man ursprungligen hittade receptet, eller kanske vilken bok/tidning."
-          position="bottom center"
+          position={isBrowser ? "bottom center" : "top right"}
         />
       </label>
       <Field name={`source`} placeholder="Källa" type="text" />
