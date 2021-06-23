@@ -2,6 +2,7 @@ import React from "react";
 import CustomPopup from "../Common/CustomPopup/CustomPopup.js";
 import CustomErrorMessage from "../Common/CustomErrorMessage/CustomErrorMessage.js";
 import { Field } from "formik";
+import { isBrowser } from "react-device-detect";
 
 function Description(props) {
   return (
@@ -10,7 +11,7 @@ function Description(props) {
         Beskrivning
         <CustomPopup
           content="Här kan man skriva en valfri text om receptet, kanske något man ska tänka på eller hur lång tid det tar att göra."
-          position="top center"
+          position={isBrowser ? "top center" : "top right"}
         />
       </label>
       <Field name={`description`} placeholder="Beskrivning" as="textarea" />

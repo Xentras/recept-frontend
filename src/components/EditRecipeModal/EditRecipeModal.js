@@ -9,10 +9,11 @@ import Steps from "../Form/Steps";
 import Tags from "../Form/Tags";
 import Source from "../Form/Source";
 import { patchRecipeNoNewImage, patchRecipeNewImage } from "../../api/api.js";
-import * as Yup from "yup"
-import CheckImage from "../../helper/CheckImage/CheckImage.js"
-import trimData from "../../helper/FormatData/FormatData.js"
-import CheckValue from "../../helper/CheckValue/CheckValue.js"
+import * as Yup from "yup";
+import CheckImage from "../../helper/CheckImage/CheckImage.js";
+import trimData from "../../helper/FormatData/FormatData.js";
+import CheckValue from "../../helper/CheckValue/CheckValue.js";
+import { isBrowser, isMobile } from "react-device-detect";
 
 function EditRecipeModal(props) {
   const submitButtonRef = useRef(null);
@@ -214,11 +215,29 @@ function EditRecipeModal(props) {
             <Form className="ui container">
               <div className="ui form">
                 <div className="ui grid">
-                  <div className="two column row">
-                    <div className="column">
+                  <div
+                    className={isBrowser ? "two column row" : "one column row"}
+                  >
+                    {isMobile && (
+                      <div className="column">
+                        <div className="ui yellow icon message">
+                          <i className="info icon" />
+                          <div className="content">
+                            <div className="header">
+                              Det är lättare att uppdatera recept på datorn!
+                            </div>
+                            <p>
+                              På datorn kan man få en bättre användarupplevelse
+                              jämfört med mobil.
+                            </p>
+                          </div>
+                        </div>
+                      </div>
+                    )}
+                    <div className="column" style={isBrowser ? {} : { marginTop: "10px" }}>
                       <Name />
                     </div>
-                    <div className="column">
+                    <div className="column" style={isBrowser ? {} : { marginTop: "10px" }}>
                       <Source />
                     </div>
                   </div>
@@ -232,15 +251,15 @@ function EditRecipeModal(props) {
                       <Ingredients values={values} />
                     </div>
                   </div>
-                  <div className="three column row">
-                    <div className="eight wide column">
+                  <div className={isBrowser ? "three column row" : "one column row"}>
+                    <div className={isBrowser ? "eight wide column" : "column"}>
                       <Steps values={values} />
                     </div>
-                    <div className="column">
+                    <div className="column" style={isBrowser ? {} : { marginTop: "10px" }}>
                       <Tags values={values} />
                     </div>
                   </div>
-                  <div className="three column row">
+                  <div className={isBrowser ? "three column row" : "one column row"}>
                     <div className="column">
                       <div className="ui input">
                         <label
@@ -279,7 +298,7 @@ function EditRecipeModal(props) {
                         ref={submitButtonRef}
                       >
                         <i className="save icon"></i>
-                        Uppdatera recept
+                        {isBrowser ? "Uppdatera recept" : "Uppdatera"}
                       </button>
                     </div>
                   </div>
@@ -292,7 +311,7 @@ function EditRecipeModal(props) {
       <Modal.Actions>
         <Button
           type="submit"
-          content="Uppdatera recept"
+          content={isBrowser ? "Uppdatera recept" : "Uppdatera"}
           labelPosition="right"
           icon="save"
           disabled={isSubmitting}

@@ -1,9 +1,12 @@
 import React, { useState } from "react";
 import { Dropdown } from "semantic-ui-react";
 import _ from "lodash";
+import { BrowserView, isBrowser, MobileView } from "react-device-detect";
 
 function RecipeContent(props) {
-  const [currentIngredientList, setCurrentIngredientList] = useState(props.ingredientList);
+  const [currentIngredientList, setCurrentIngredientList] = useState(
+    props.ingredientList
+  );
   const recipe = props.recipe;
   const dropdownSizeOptions = props.dropdownSizeOptions;
 
@@ -37,74 +40,115 @@ function RecipeContent(props) {
   };
 
   return (
-    <div className="two column row">
-      <div className="column">
-        <h1>{recipe.name}</h1>
-        <p>Källa: {recipe.source}</p>
-        <div className="ui divider"></div>
-        <div>
-          <h3 style={{ display: "inline-block" }}>Ingredienser</h3>
-          <div style={{ display: "inline-block", float: "right" }}>
-            <Dropdown
-              selection
-              options={dropdownSizeOptions || []}
-              onChange={changeIngredientList}
-              defaultValue={0}
-            />
+    <>
+      <div className="two column row">
+        <div className="column">
+          <h1>{recipe.name}</h1>
+          <p>Källa: {recipe.source}</p>
+          <div className="ui divider"></div>
+          <div>
+            <h3 style={{ display: "inline-block" }}>Ingredienser</h3>
+            <div
+              style={
+                isBrowser ? { display: "inline-block", float: "right" } : {}
+              }
+            >
+              <BrowserView>
+                <Dropdown
+                  selection
+                  options={dropdownSizeOptions || []}
+                  onChange={changeIngredientList}
+                  defaultValue={0}
+                />
+              </BrowserView>
+              <MobileView>
+                <Dropdown
+                  selection
+                  compact
+                  options={dropdownSizeOptions || []}
+                  onChange={changeIngredientList}
+                  defaultValue={0}
+                />
+              </MobileView>
+            </div>
+          </div>
+          <div className="ui list">
+            {currentIngredientList.map((subcategory, j) => {
+              return (
+                <div className="item" key={j}>
+                  <div className="header">
+                    {setCatergoryHeader(subcategory.subcategory)}
+                  </div>
+                  <div className="ui bulleted list">
+                    {currentIngredientList[j].ingredients.map(
+                      (ingredient, i) => {
+                        return (
+                          <div key={i} className="item">
+                            {ingredient.amount}{" "}
+                            {removeEmptyText(ingredient.unit)} {ingredient.name}
+                          </div>
+                        );
+                      }
+                    )}
+                  </div>
+                </div>
+              );
+            })}
+          </div>
+          <div className="ui divider"></div>
+          <BrowserView>
+            <h3>Gör så här</h3>
+            <div className="ui ordered list">
+              {recipe.steps.map((step, j) => {
+                return (
+                  <div className="item" key={j}>
+                    {step}
+                  </div>
+                );
+              })}
+            </div>
+            <div className="ui divider"></div>
+          </BrowserView>
+        </div>
+        <div className="column">
+          <img
+            alt=""
+            src={recipe.imageURL}
+            className="ui medium rounded image"
+          />
+          <p>
+            Beskrivning: <br />
+            {recipe.description}
+          </p>
+          <div className="ui divider"></div>
+          <p>Kategori:</p>
+          <div className="ui tag labels">
+            {recipe.tags.map((tag, j) => {
+              return (
+                <div className="ui teal label" key={j}>
+                  {tag}
+                </div>
+              );
+            })}
           </div>
         </div>
-        <div className="ui list">
-          {currentIngredientList.map((subcategory, j) => {
-            return (
-              <div className="item" key={j}>
-                <div className="header">
-                  {setCatergoryHeader(subcategory.subcategory)}
-                </div>
-                <div className="ui bulleted list">
-                  {currentIngredientList[j].ingredients.map((ingredient, i) => {
-                    return (
-                      <div key={i} className="item">
-                        {ingredient.amount} {removeEmptyText(ingredient.unit)} {ingredient.name}
-                      </div>
-                    );
-                  })}
-                </div>
-              </div>
-            );
-          })}
-        </div>
-        <div className="ui divider"></div>
-        <h3>Gör så här</h3>
-        <div className="ui ordered list">
-          {recipe.steps.map((step, j) => {
-            return (
-              <div className="item" key={j}>
-                {step}
-              </div>
-            );
-          })}
-        </div>
-        <div className="ui divider"></div>
       </div>
-      <div className="column">
-        <img alt="" src={recipe.imageURL} className="ui medium rounded image" />
-        <p>
-          Beskrivning: <br />
-          {recipe.description}
-        </p>
-        <div className="ui divider"></div>
-        <p>Kategori:</p>
-        <div className="ui tag labels">
-          {recipe.tags.map((tag, j) => {
-            return (
-              <div className="ui teal label" key={j}>
-                {tag}
-              </div>
-            );
-          })}
+      <MobileView className="one column row" style={{paddingTop: 0}}>
+        <div className="column">
+          <h3>Gör så här</h3>
+          <div className="ui ordered list">
+            {recipe.steps.map((step, j) => {
+              return (
+                <div className="item" key={j}>
+                  {step}
+                </div>
+              );
+            })}
+          </div>
         </div>
-      </div>
-    </div>
+        <div className="ui divider"></div>
+      </MobileView>
+    </>
   );
 }
 

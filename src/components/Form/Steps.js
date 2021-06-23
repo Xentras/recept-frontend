@@ -1,8 +1,8 @@
 import React, { useEffect, useState, useCallback } from "react";
 import CustomPopup from "../Common/CustomPopup/CustomPopup.js";
-import CustomField from "../Common/CustomField/CustomField.js";
 import CustomErrorMessage from "../Common/CustomErrorMessage/CustomErrorMessage.js";
 import { Field, FieldArray } from "formik";
+import { isBrowser } from "react-device-detect";
 
 function NewSteps(props) {
   const [buttonsEnabled, setButtonsEnabled] = useState(false);
@@ -34,7 +34,7 @@ function NewSteps(props) {
                 Steg
                 <CustomPopup
                   content="Här skriver man vilken ordning som allt ska göras i, man behöver inte lägga till nummer i början."
-                  position="top center"
+                  position={isBrowser ? "top center" : "top right"}
                 />
               </label>
             </div>
