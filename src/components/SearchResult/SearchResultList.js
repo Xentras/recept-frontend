@@ -1,11 +1,31 @@
-import React from "react";
+import React, { useEffect, useState } from "react";
 import { BrowserView, MobileView } from "react-device-detect";
 import { Link } from "react-router-dom";
+import { Pagination } from "semantic-ui-react";
 
 function SearchResultList(props) {
+  const [activePage, setActivePage] = useState(1);
+  const [visibleItems, setVisibleItems] = useState([]);
+  const allRecipes = props.thumbnail;
+  const itemsPerPage = 20;
+  const totalPages = props.thumbnail.length / itemsPerPage;
+
+  const onChange = (e, pageInfo) => {
+    setActivePage(pageInfo.activePage);
+  };
+
+  useEffect(() => {
+    setVisibleItems(
+      allRecipes.slice(
+        (activePage - 1) * itemsPerPage,
+        (activePage - 1) * itemsPerPage + itemsPerPage
+      )
+    );
+  }, [props.thumbnail, activePage]);
+
   // This function is used to display all the recipes that are returned from the search
   // it will create a list of clickable thumbnails
-  const recipeThumbnailList = props.thumbnail.map(({ name, imageURL }, i) => {
+  const recipeThumbnailList = visibleItems.map(({ name, imageURL }, i) => {
     return (
       <div key={i} className="four wide column">
         <BrowserView>
@@ -44,6 +64,23 @@ function SearchResultList(props) {
         </div>
       </BrowserView>
       <MobileView>{recipeThumbnailList}</MobileView>
+      <div
+          style={{
+            display: "flex",
+            alignItems: "center",
+            justifyContent: "center",
+            marginTop: "3%",
+          }}
+        >
+          {totalPages > 1 && (
+            <Pagination
+              onPageChange={onChange}
+              activePage={activePage}
+              totalPages={totalPages}
+              ellipsisItem={null}
+            />
+          )}
+        </div>
     </div>
   );
 }
