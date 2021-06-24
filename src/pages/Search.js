@@ -26,7 +26,7 @@ function Search(props) {
   return (
     <div className="ui container" style={{ marginTop: "10px" }}>
       <SearchBar searchRecipe={searchRecipe} />
-      {showLoadingSpinner ? <LoadingSpinner size={'medium'}/> : <SearchResultList thumbnail={thumbnail} history={props.history} />}
+      {showLoadingSpinner ? <LoadingSpinner size={'medium'}/> : (thumbnail.length > 0 ? <SearchResultList thumbnail={thumbnail} history={props.history} /> : <></>)}
     </div>
   );
 }
